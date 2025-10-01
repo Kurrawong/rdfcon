@@ -32,13 +32,9 @@
   <body>
     <h1>YAML Schema Form</h1>
     <form id="schemaForm">
-      <label for="prefixes">Prefix:</label>
-      <small>Specify RDF prefix used in this document.</small>
-      <input type="text" id="prefix" name="prefix" />
-
-      <label for="namespace">Namespace:</label>
-      <small>Specify RDF namespace for the prefix.</small>
-      <input type="text" id="namespace" name="namespace" />
+      <label for="prefixes">Prefixes (Turtle format):</label>
+      <small>Enter prefixes in Turtle format, e.g., `@prefix ex: <https://example.org/> .`</small>
+      <textarea id="prefixes" name="prefixes" rows="5"></textarea>
 
       <label for="infile">Input File:</label>
       <small>[required] The CSV file to process, interpreted as an absolute path or a path relative to this file.</small>
@@ -97,11 +93,15 @@
             }
           });
 
-          const prefixes = document.getElementById("prefix").value.split(",").map((prefix, index) => {
-            const namespace = document.getElementById("namespace").value.split(",")[index];
-            return `${prefix.trim()}: <${namespace.trim()}>`;
+          const turtlePrefixes = document.getElementById("prefixes").value;
+          const graph = new $rdf.graph();
+          $rdf.parse(turtlePrefixes, graph, 'http://example.org/', 'text/turtle');
+
+          const prefixes = {};
+          graph.namespaces.forEach((uri, prefix) => {
+            prefixes[prefix] = `<${uri}>`;
           });
-          data.prefixes = prefixes;
+          data.prefixes = Object.entries(prefixes).map(([prefix, uri]) => `${prefix}: ${uri}`);
 
           const yamlData = jsyaml.dump(data);
           const blob = new Blob([yamlData], { type: "text/yaml" });
@@ -114,5 +114,6 @@
         });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rdflib/2.2.0/rdflib.min.js"></script>
   </body>
 </html>
