@@ -102,54 +102,56 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/n3/1.11.0/n3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
     <script>
-        document
-            .getElementById("schemaForm")
-            .addEventListener("submit", function (event) {
-                event.preventDefault();
-                const formData = new FormData(event.target);
-                const data = {};
-                formData.forEach((value, key) => {
-                    if (key === "types") {
-                        data[key] = value.split(",").map((item) => item.trim());
-                    } else if (key === "columns") {
-                        try {
-                            data[key] = JSON.parse(value);
-                        } catch (e) {
-                            alert("Invalid JSON format for columns");
-                            return;
-                        }
-                    } else {
-                        data[key] = value || null;
-                    }
-                });
+      document
+        .getElementById("schemaForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const formData = new FormData(event.target);
+          const data = {};
+          formData.forEach((value, key) => {
+            if (key === "types") {
+              data[key] = value.split(",").map((item) => item.trim());
+            } else if (key === "columns") {
+              try {
+                data[key] = JSON.parse(value);
+              } catch (e) {
+                alert("Invalid JSON format for columns");
+                return;
+              }
+            } else {
+              data[key] = value || null;
+            }
+          });
 
-                const turtlePrefixes = document.getElementById("prefixes").value;
-                const parser = new N3.Parser();
-                const prefixes = {};
+          const turtlePrefixes = document.getElementById("prefixes").value;
+          const parser = new N3.Parser();
+          const prefixes = {};
 
-                parser.parse(turtlePrefixes, (error, quad, prefixesMap) => {
-                    if (error) {
-                        console.error(error);
-                        return;
-                    }
-                    if (prefixesMap) {
-                        Object.entries(prefixesMap).forEach(([prefix, uri]) => {
-                            prefixes[prefix] = `<${uri}>`;
-                        });
-                    }
-                });
+          parser.parse(turtlePrefixes, (error, quad, prefixesMap) => {
+            if (error) {
+              console.error(error);
+              return;
+            }
+            if (prefixesMap) {
+              Object.entries(prefixesMap).forEach(([prefix, uri]) => {
+                prefixes[prefix] = `<${uri}>`;
+              });
+            }
+          });
 
-                data.prefixes = Object.entries(prefixes).map(([prefix, uri]) => `${prefix}: ${uri}`);
+          data.prefixes = Object.entries(prefixes).map(
+            ([prefix, uri]) => `${prefix}: ${uri}`,
+          );
 
-                const yamlData = jsyaml.dump(data);
-                const blob = new Blob([yamlData], { type: "text/yaml" });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "schema.yaml";
-                a.click();
-                URL.revokeObjectURL(url);
-            });
+          const yamlData = jsyaml.dump(data);
+          const blob = new Blob([yamlData], { type: "text/yaml" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "schema.yaml";
+          a.click();
+          URL.revokeObjectURL(url);
+        });
     </script>
   </body>
 </html>
