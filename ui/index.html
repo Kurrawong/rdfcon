@@ -99,7 +99,7 @@
       <button type="submit">Download YAML</button>
     </form>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/rdflib/2.2.0/rdflib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/n3/1.11.0/n3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
     <script>
         document
@@ -124,21 +124,22 @@
                 });
 
                 const turtlePrefixes = document.getElementById("prefixes").value;
-                const graph = new $rdf.graph();
-                $rdf.parse(
-                    turtlePrefixes,
-                    graph,
-                    "http://example.org/",
-                    "text/turtle",
-                );
-
+                const parser = new N3.Parser();
                 const prefixes = {};
-                graph.namespaces.forEach((uri, prefix) => {
-                    prefixes[prefix] = `<${uri}>`;
+
+                parser.parse(turtlePrefixes, (error, quad, prefixesMap) => {
+                    if (error) {
+                        console.error(error);
+                        return;
+                    }
+                    if (prefixesMap) {
+                        Object.entries(prefixesMap).forEach(([prefix, uri]) => {
+                            prefixes[prefix] = `<${uri}>`;
+                        });
+                    }
                 });
-                data.prefixes = Object.entries(prefixes).map(
-                    ([prefix, uri]) => `${prefix}: ${uri}`,
-                );
+
+                data.prefixes = Object.entries(prefixes).map(([prefix, uri]) => `${prefix}: ${uri}`);
 
                 const yamlData = jsyaml.dump(data);
                 const blob = new Blob([yamlData], { type: "text/yaml" });
