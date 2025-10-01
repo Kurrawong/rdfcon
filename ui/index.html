@@ -200,7 +200,12 @@
               [prefix]: uri,
             }));
 
-            const yamlData = jsyaml.dump(data);
+            // Remove null properties
+            const cleanData = JSON.parse(JSON.stringify(data, (key, value) => {
+              return value === null ? undefined : value;
+            }));
+
+            const yamlData = jsyaml.dump(cleanData);
             const blob = new Blob([yamlData], { type: "text/yaml" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
