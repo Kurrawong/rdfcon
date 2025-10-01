@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YAML Schema Form</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        form { max-width: 600px; margin: 0 auto; }
+        label { display: block; margin-top: 10px; }
+        input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; }
+        button { margin-top: 20px; padding: 10px 15px; }
+    </style>
+</head>
+<body>
+    <h1>YAML Schema Form</h1>
+    <form id="schemaForm">
+        <label for="prefixes">Prefixes (comma-separated):</label>
+        <input type="text" id="prefixes" name="prefixes">
+
+        <label for="infile">Input File:</label>
+        <input type="text" id="infile" name="infile" required>
+
+        <label for="outdir">Output Directory:</label>
+        <input type="text" id="outdir" name="outdir">
+
+        <label for="graph">Graph:</label>
+        <input type="text" id="graph" name="graph">
+
+        <label for="namespace">Namespace:</label>
+        <input type="text" id="namespace" name="namespace">
+
+        <label for="identifier">Identifier:</label>
+        <input type="text" id="identifier" name="identifier" required>
+
+        <label for="types">Types (comma-separated):</label>
+        <input type="text" id="types" name="types" required>
+
+        <label for="columns">Columns (JSON format):</label>
+        <textarea id="columns" name="columns" rows="5"></textarea>
+
+        <label for="template">Template:</label>
+        <input type="text" id="template" name="template">
+
+        <button type="submit">Download YAML</button>
+    </form>
+
+    <script>
+        document.getElementById('schemaForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {};
+            formData.forEach((value, key) => {
+                if (key === 'prefixes' || key === 'types') {
+                    data[key] = value.split(',').map(item => item.trim());
+                } else if (key === 'columns') {
+                    try {
+                        data[key] = JSON.parse(value);
+                    } catch (e) {
+                        alert('Invalid JSON format for columns');
+                        return;
+                    }
+                } else {
+                    data[key] = value || null;
+                }
+            });
+
+            const yamlData = jsyaml.dump(data);
+            const blob = new Blob([yamlData], { type: 'text/yaml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'schema.yaml';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+</body>
+</html>
