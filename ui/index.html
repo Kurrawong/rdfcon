@@ -275,33 +275,43 @@
           columnDiv.innerHTML = `
           <label>Column Name:</label>
           <input type="text" name="column[${columnCount}][name]" required placeholder="headline" />
+          <p class="help">[required] Name of the column.</p>
 
           <label>Predicate:</label>
           <input type="text" name="column[${columnCount}][predicate]" required placeholder="schema:headline" />
+          <p class="help">[required] Predicate to use in RDF.</p>
 
           <label>Datatype:</label>
           <input type="text" name="column[${columnCount}][datatype]" value="xsd:string" placeholder="xsd:string" />
+          <p class="help">Datatype of the column data. Default is <code>xsd:string</code>.</p>
 
           <label>Separator:</label>
           <input type="text" name="column[${columnCount}][separator]" placeholder="||" />
+          <p class="help">A separator used to delineate multiple values per cell. Default is <code>null</code>.</p>
 
           <label>As IRI:</label>
           <input type="checkbox" name="column[${columnCount}][as_iri]" />
+          <p class="help">If the value should be treated as an IRI, set this to <code>true</code>. Default is <code>false</code>.</p>
 
           <label>Namespace:</label>
           <input type="text" name="column[${columnCount}][namespace]" placeholder="https://example.org/agent/" />
+          <p class="help">A namespace to use for the IRI. Only used if <code>as_iri</code> is <code>true</code> and the values for this column are not already IRIs.</p>
 
           <label>As UUID:</label>
           <input type="checkbox" name="column[${columnCount}][as_uuid]" />
+          <p class="help">If <code>true</code>, create a UUID for the IRI instead of just using the values from the column. Only used if <code>as_iri</code> is <code>true</code>. Default is <code>false</code>.</p>
 
           <label>Ignore Case:</label>
           <input type="checkbox" name="column[${columnCount}][ignore_case]" />
+          <p class="help">If <code>true</code>, apply a lowercase transformation on the column values before minting the UUID. Only used if <code>as_iri</code> is <code>true</code>. Default is <code>false</code>.</p>
 
           <label>Label:</label>
           <input type="text" name="column[${columnCount}][label]" placeholder="schema:name" />
+          <p class="help">If given, declare a label for the minted IRI using this predicate.</p>
 
           <label>Type:</label>
           <input type="text" name="column[${columnCount}][type]" placeholder="schema:Text" />
+          <p class="help">If given, declare the minted IRI as an instance of this class.</p>
 
           <button type="button" class="removeColumn">Remove</button>
         `;
