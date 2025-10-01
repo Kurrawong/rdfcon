@@ -10,11 +10,11 @@ prefixes:
 # [ required ]
 # the CSV file to process interpreted as an absolute path
 # or a path relative to this file.
-infile: ../data.csv
+infile: data.csv
 
 # An optional directory for the output, defaults to the same
 # directory as {infile}
-outdir: ../
+outdir: ./
 
 # An optional named graph to use for the generated RDF.
 # If given the output format will be .trig otherwise .ttl

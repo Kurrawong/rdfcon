@@ -5,11 +5,16 @@ called from the command line.
 """
 
 import argparse
+import logging
+import logging.config
 from pathlib import Path
 
+from config.logs import logging_config
 from convert import convert
-from logs import addFileHandler, logger
 from utils import parse_config_from_yaml
+
+logging.config.dictConfig(logging_config)
+logger = logging.getLogger(__name__)
 
 
 def cli() -> argparse.Namespace:
@@ -27,30 +32,39 @@ def cli() -> argparse.Namespace:
     return args
 
 
-if __name__ == "__main__":
-    args = cli()
-    specpath = Path(args.spec)
-    if not specpath.exists():
-        raise FileNotFoundError(f"Spec file {specpath} could not be found")
-    spec = parse_config_from_yaml(specpath)
+def get_spec(path: Path) -> dict:
+    if not path.exists():
+        raise FileNotFoundError(f"Spec file could not be found at {path}")
+    spec = parse_config_from_yaml(path)
+    return spec
+
+
+def resolve_paths(default_dir: Path, spec: dict) -> tuple[Path]:
     if Path(spec["infile"]).is_absolute():
-        data = Path(spec["infile"])
+        infile = Path(spec["infile"])
     else:
-        data = Path((specpath / spec["infile"]).resolve())
-    if not data.exists():
-        raise FileNotFoundError(f"Data file {data} could not be found")
+        infile = Path((default_dir / spec["infile"]).resolve())
+    if not infile.exists():
+        raise FileNotFoundError(f"Data file {infile} could not be found")
     if not spec.get("outdir"):
-        outdir = data.parent
+        outdir = infile.parent
     elif Path(spec["outdir"]).is_absolute():
         outdir = Path(spec["outdir"])
     else:
-        outdir = (specpath / spec["outdir"]).resolve()
+        outdir = (default_dir / spec["outdir"]).resolve()
 
-    logfile = outdir / data.with_suffix(".log").name
-    addFileHandler(logfile)
-    logger.info(f"using dataset configuration {specpath} for {data}")
+    return infile, outdir
+
+
+if __name__ == "__main__":
+    args = cli()
+    spec_path = Path(args.spec)
+    spec = get_spec(path=spec_path)
+    infile, outdir = resolve_paths(default_dir=spec_path.parent, spec=spec)
+
+    logger.info(f"using dataset configuration {spec_path} for {infile}")
     logger.info("-" * 80)
     logger.info(__import__("pprint").pformat(spec))
     logger.info("-" * 80)
 
-    convert(data=data, spec=spec, outdir=outdir, limit=args.limit)
+    convert(infile=infile, spec=spec, outdir=outdir, limit=args.limit)
