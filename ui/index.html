@@ -83,7 +83,8 @@
 
       <label>Columns:</label>
       <small
-        >Add column specifications. Available properties and their default values are specified in the schema.</small
+        >Add column specifications. Available properties and their default
+        values are specified in the schema.</small
       >
       <div id="columnsContainer"></div>
       <button type="button" id="addColumn">Add Column</button>
@@ -102,12 +103,14 @@
     <script src="https://unpkg.com/n3/browser/n3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
     <script>
-      document.getElementById("addColumn").addEventListener("click", function () {
-        const container = document.getElementById("columnsContainer");
-        const columnDiv = document.createElement("div");
-        columnDiv.classList.add("column-spec");
+      document
+        .getElementById("addColumn")
+        .addEventListener("click", function () {
+          const container = document.getElementById("columnsContainer");
+          const columnDiv = document.createElement("div");
+          columnDiv.classList.add("column-spec");
 
-        columnDiv.innerHTML = `
+          columnDiv.innerHTML = `
           <label>Column Name:</label>
           <input type="text" name="column" required />
 
@@ -141,14 +144,18 @@
           <button type="button" class="removeColumn">Remove</button>
         `;
 
-        container.appendChild(columnDiv);
+          container.appendChild(columnDiv);
 
-        columnDiv.querySelector(".removeColumn").addEventListener("click", function () {
-          container.removeChild(columnDiv);
+          columnDiv
+            .querySelector(".removeColumn")
+            .addEventListener("click", function () {
+              container.removeChild(columnDiv);
+            });
         });
-      });
 
-      document.getElementById("schemaForm").addEventListener("submit", function (event) {
+      document
+        .getElementById("schemaForm")
+        .addEventListener("submit", function (event) {
           event.preventDefault();
           const formData = new FormData(event.target);
           const data = {
