@@ -197,12 +197,12 @@
             data.prefixes = Object.entries(prefixes).map(([prefix, uri]) => ({ [prefix]: uri }));
 
             // Reorder data to place columns just above template
+            const { template, ...rest } = data;
             const reorderedData = {
-              ...data,
+              ...rest,
               columns: data.columns,
-              template: data.template,
+              template: template,
             };
-            delete reorderedData.template; // Remove template from original position
 
             const yamlData = jsyaml.dump(reorderedData);
             const blob = new Blob([yamlData], { type: "text/yaml" });
