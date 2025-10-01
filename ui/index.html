@@ -64,49 +64,49 @@
         >Enter prefixes in Turtle format, e.g.,
         <code>@prefix ex: &lt;https://example.org/&gt; .</code></small
       >
-      <textarea id="prefixes" name="prefixes" rows="5"></textarea>
+      <textarea id="prefixes" name="prefixes" rows="5" placeholder="@prefix ex: <https://example.org/> ."></textarea>
 
       <label for="infile">Input File:</label>
       <small
         >[required] The CSV file to process, interpreted as an absolute path or
         a path relative to this file.</small
       >
-      <input type="text" id="infile" name="infile" required />
+      <input type="text" id="infile" name="infile" required placeholder="data.csv" />
 
       <label for="outdir">Output Directory:</label>
       <small
         >An optional directory for the output, defaults to the same directory as
         the input file.</small
       >
-      <input type="text" id="outdir" name="outdir" />
+      <input type="text" id="outdir" name="outdir" placeholder="./output" />
 
       <label for="graph">Graph:</label>
       <small
         >An optional named graph to use for the generated RDF. If given, the
         output format will be .trig otherwise .ttl.</small
       >
-      <input type="text" id="graph" name="graph" />
+      <input type="text" id="graph" name="graph" placeholder="ex:graph" />
 
       <label for="namespace">Namespace:</label>
       <small
         >A namespace to use when minting IRIs for the identifier. If not given,
         the identifier will be assumed to already be a valid IRI.</small
       >
-      <input type="text" id="namespace" name="namespace" />
+      <input type="text" id="namespace" name="namespace" placeholder="https://example.org/pid/" />
 
       <label for="identifier">Identifier:</label>
       <small
         >[required] Name of column with the unique identifiers for each
         row.</small
       >
-      <input type="text" id="identifier" name="identifier" required />
+      <input type="text" id="identifier" name="identifier" required placeholder="id" />
 
       <label for="types">Types (comma-separated):</label>
       <small
         >[required] Classes to assign to each resource, can have as many as you
         want.</small
       >
-      <input type="text" id="types" name="types" required />
+      <input type="text" id="types" name="types" required placeholder="schema:CreativeWork, ex:Resource" />
 
       <label>Columns:</label>
       <small
@@ -122,7 +122,7 @@
         template must be in turtle format and valid RDF after variable
         substitutions.</small
       >
-      <textarea id="template" name="template" rows="5"></textarea>
+      <textarea id="template" name="template" rows="5" placeholder="{id} schema:comment &quot;converted from csv using rdfcon&quot;^^xsd:string ."></textarea>
 
       <button type="submit">Download YAML</button>
     </form>
@@ -141,22 +141,22 @@
 
           columnDiv.innerHTML = `
           <label>Column Name:</label>
-          <input type="text" name="column[${columnCount}][name]" required />
+          <input type="text" name="column[${columnCount}][name]" required placeholder="headline" />
 
           <label>Predicate:</label>
-          <input type="text" name="column[${columnCount}][predicate]" required />
+          <input type="text" name="column[${columnCount}][predicate]" required placeholder="schema:headline" />
 
           <label>Datatype:</label>
-          <input type="text" name="column[${columnCount}][datatype]" value="xsd:string" />
+          <input type="text" name="column[${columnCount}][datatype]" value="xsd:string" placeholder="xsd:string" />
 
           <label>Separator:</label>
-          <input type="text" name="column[${columnCount}][separator]" />
+          <input type="text" name="column[${columnCount}][separator]" placeholder="||" />
 
           <label>As IRI:</label>
           <input type="checkbox" name="column[${columnCount}][as_iri]" />
 
           <label>Namespace:</label>
-          <input type="text" name="column[${columnCount}][namespace]" />
+          <input type="text" name="column[${columnCount}][namespace]" placeholder="https://example.org/agent/" />
 
           <label>As UUID:</label>
           <input type="checkbox" name="column[${columnCount}][as_uuid]" />
@@ -165,10 +165,10 @@
           <input type="checkbox" name="column[${columnCount}][ignore_case]" />
 
           <label>Label:</label>
-          <input type="text" name="column[${columnCount}][label]" />
+          <input type="text" name="column[${columnCount}][label]" placeholder="schema:name" />
 
           <label>Type:</label>
-          <input type="text" name="column[${columnCount}][type]" />
+          <input type="text" name="column[${columnCount}][type]" placeholder="schema:Text" />
 
           <button type="button" class="removeColumn">Remove</button>
         `;
