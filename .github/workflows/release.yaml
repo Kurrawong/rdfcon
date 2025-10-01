@@ -14,25 +14,13 @@ permissions:
 
 jobs:
   release:
-    name: Release
     runs-on: ubuntu-latest
-    outputs:
-      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
-      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
         with:
-          fetch-depth: 0
-
-      - name: Semantic Release
-        id: semantic
-        uses: cycjimmy/semantic-release-action@v4
+          version: 10
+          run_install: true
+      - run: pnpm semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Debug Output
-        run: |
-          echo "New release published: ${{ steps.semantic.outputs.new_release_published }}"
-          echo "New release version: ${{ steps.semantic.outputs.new_release_version }}"
-
