@@ -159,12 +159,15 @@
             if (key === "types") {
               data[key] = value.split(",").map((item) => item.trim());
             } else if (key.startsWith("column")) {
-              const columnIndex = data.columns.length - 1;
-              const columnKey = key.split("[")[1].split("]")[0];
-              if (!data.columns[columnIndex]) {
-                data.columns[columnIndex] = {};
+              const columnIndexMatch = key.match(/column\[(\d+)\]/);
+              if (columnIndexMatch) {
+                const columnIndex = parseInt(columnIndexMatch[1], 10);
+                const columnKey = key.split("]")[1].substring(1);
+                if (!data.columns[columnIndex]) {
+                  data.columns[columnIndex] = {};
+                }
+                data.columns[columnIndex][columnKey] = value;
               }
-              data.columns[columnIndex][columnKey] = value;
             } else {
               data[key] = value || null;
             }
