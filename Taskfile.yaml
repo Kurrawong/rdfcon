@@ -1,0 +1,17 @@
+# https://taskfile.dev/usage
+
+version: '3'
+
+dotenv: ['.env']
+
+tasks:
+  default:
+    desc: list all tasks
+    cmd: task -a
+
+  runExample:
+    desc: convert the example data
+    cmds:
+      - uv run rdfcon examples/data.yaml
+      - cat examples/data.trig
+

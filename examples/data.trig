@@ -1,0 +1,50 @@
+@prefix agent: <https://example.org/agent/> .
+@prefix ex: <https://example.org/> .
+@prefix genre: <https://example.org/genre/> .
+@prefix pid: <https://example.org/pid/> .
+@prefix schema: <https://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:graph {
+    pid:1 a ex:Resource,
+            schema:CreativeWork ;
+        schema:author agent:1 ;
+        schema:comment "converted from csv using rdfcon"^^xsd:string ;
+        schema:datePublished "2025-03-17"^^xsd:date ;
+        schema:genre genre:4bc092dd-f26d-3dc2-9f8b-659cd753c014 ;
+        schema:headline "Publication 1"^^xsd:string ;
+        schema:keywords "science"^^xsd:string .
+
+    pid:2 a ex:Resource,
+            schema:CreativeWork ;
+        schema:author agent:2 ;
+        schema:comment "converted from csv using rdfcon"^^xsd:string ;
+        schema:datePublished "2024-07-01"^^xsd:date ;
+        schema:genre genre:4bc092dd-f26d-3dc2-9f8b-659cd753c014 ;
+        schema:headline "Publication 2"^^xsd:string ;
+        schema:keywords "business and \"stuff\""^^xsd:string,
+            "tech"^^xsd:string .
+
+    pid:3 a ex:Resource,
+            schema:CreativeWork ;
+        schema:author agent:3 ;
+        schema:comment "converted from csv using rdfcon"^^xsd:string ;
+        schema:datePublished "2024-07-03"^^xsd:date ;
+        schema:genre genre:a4969d28-ad62-3940-9f3c-2cdec34989dd ;
+        schema:headline "Publication 3"^^xsd:string ;
+        schema:keywords "economics and 'stuff'"^^xsd:string .
+
+    agent:1 schema:name "jovi, bon"^^xsd:string .
+
+    agent:2 schema:name "joel mangione"^^xsd:string .
+
+    agent:3 schema:name "dwayne the rock johnson"^^xsd:string .
+
+    genre:a4969d28-ad62-3940-9f3c-2cdec34989dd a schema:Text ;
+        schema:name "category b"^^xsd:string .
+
+    genre:4bc092dd-f26d-3dc2-9f8b-659cd753c014 a schema:Text ;
+        schema:name "category A"^^xsd:string,
+            "category a"^^xsd:string .
+}
+

@@ -1,0 +1,4 @@
+id,headline,author,author_name,date published,keywords,category
+1,Publication 1,1,"jovi, bon",2025-03-17,science,category a
+2,Publication 2,2,joel mangione',2024-07-01,tech||business and "stuff",category A
+3,Publication 3,3,dwayne "the rock" johnson,2024-07-03,economics and 'stuff',category b

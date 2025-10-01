@@ -1,0 +1,113 @@
+# specify RDF prefixes used in this document
+prefixes:
+  - ex: <https://example.org/>
+  - pid: <https://example.org/pid/>
+  - agent: <https://example.org/agent/>
+  - genre: <https://example.org/genre/>
+  - schema: <https://schema.org/>
+  - xsd: <http://www.w3.org/2001/XMLSchema#>
+
+# [ required ]
+# the CSV file to process interpreted as an absolute path
+# or a path relative to this file.
+infile: ../data.csv
+
+# An optional directory for the output, defaults to the same
+# directory as {infile}
+outdir: ../
+
+# An optional named graph to use for the generated RDF.
+# If given the output format will be .trig otherwise .ttl
+graph: ex:graph
+
+# [ required ]
+# Name of column with the unique identifiers for each row
+identifier: id
+
+# A namespace to use when minting IRIs for the {identifier}.
+# if not given then {identifier} will be assumed to already
+# be a valid IRI.
+namespace: <https://example.org/pid/>
+
+# [ required ]
+# classes to assign to each resource, can have as many as you want.
+types:
+  - schema:CreativeWork
+  - ex:Resource
+
+# An optional mapping of properties for each column
+# available properties and their default values are as follows
+#
+# columns:
+#   - column: ...                   # [ required ] name of the column
+#     predicate: ...                # [ required ] predicate to use in RDF
+#     datatype: xsd:string          #              datatype of the column data
+#     separator: null               #              a separator used to delineate multiple values per cell
+#     as_iri: false                 #              if the value should be treated as an iri set this to True
+#     namespace: ...                #              a namespace to use for the IRI. Only used if {as_iri} = true and the values for this column are not already IRIs
+#     as_uuid: false                #              if true, create a UUID for the IRI instead of just using the values from the column. Only used if {as_iri} = true.
+#     ignore_case: false            #              if true, apply a lowercase transformation on the column values before minting the UUID. Only used if {as_iri} = true.
+#     label: ...                    #              if given, declare a label for the minted IRI using this predicate.
+#     type: ...                     #              if given, declare the minted IRI as an instance of this class.
+
+columns:
+  - column: headline
+    predicate: schema:headline
+
+  - column: author
+    predicate: schema:author
+    as_iri: true
+    namespace: <https://example.org/agent/>
+
+  - column: date published
+    predicate: schema:datePublished
+    datatype: xsd:date
+
+  - column: keywords
+    predicate: schema:keywords
+    datatype: xsd:string
+    separator: "||"
+
+  - column: category
+    predicate: schema:genre
+    as_iri: true
+    as_uuid: true
+    ignore_case: true
+    namespace: <https://example.org/genre/>
+    label: schema:name
+    type: schema:Text
+
+# An optional template to be evaluated for each row of the data.
+#
+# The template must
+#    - be in turtle format
+#    - be valid RDF after the variable substitutions.
+#
+# The template can
+#    - contain placeholders like {id} or {author}, where each placeholder
+#      is the name of a column in the source data. (see notes below, for
+#      funky column names)
+#
+# Notes:
+# - The template can use the prefixes declared in the prefixes: section of this document.
+# - The template will be evaluated once for each row of the dataset.
+# - A placeholder must be the name of a column, and it will be substituted
+#   with the value of the current row for that column.
+# - If the placeholder is the {identifier} column then it will be substituted with the
+#   computed IRI for that column instead of just the string. Other columns may
+#   be made as IRIs manually in the template. i.e.
+#        {iri} schema:author <https://example.org/agent/{author}> .
+#
+# Limitations:
+# - It is not possible to split multiple values out of a cell, like you can with the
+#   column maps.
+# - Column names with punctuation characters or whitespace (i.e. ' /-%$#' etc.) cannot be processed.
+#   for the most reliable experience try to ensure that column names do not
+#   contain punctuation characters or whitespace. underscores are accepted.
+# - all single/double quote chars and newlines will be removed from the column values
+#   to avoid breaking the RDF.
+#
+#
+template: |
+  {id} schema:comment "converted from csv using rdfcon"^^xsd:string .
+  <https://example.org/agent/{author}> schema:name "{author_name}"^^xsd:string .
