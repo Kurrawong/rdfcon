@@ -174,7 +174,7 @@
                 if (!data.columns[columnIndex]) {
                   data.columns[columnIndex] = {};
                 }
-                data.columns[columnIndex][columnKey] = value;
+                data.columns[columnIndex][columnKey] = value || null;
               }
             } else {
               data[key] = value || null;
