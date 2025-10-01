@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RDFCon GUI spec creation form</title>
+    <title>RDFCon</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
@@ -63,10 +63,12 @@
   <body>
     <section class="section">
       <div class="container">
-        <h1 class="title">YAML Schema Form</h1>
+        <h1 class="title">RDFCon spec creator</h1>
         <form id="schemaForm">
           <div class="field">
-            <label class="label" for="prefixes">Prefixes (Turtle format):</label>
+            <label class="label" for="prefixes"
+              >Prefixes (Turtle format):</label
+            >
             <div class="control">
               <textarea
                 class="textarea"
@@ -76,7 +78,10 @@
                 placeholder="@prefix ex: <https://example.org/> ."
               ></textarea>
             </div>
-            <p class="help">Enter prefixes in Turtle format, e.g., <code>@prefix ex: &lt;https://example.org/&gt; .</code></p>
+            <p class="help">
+              Enter prefixes in Turtle format, e.g.,
+              <code>@prefix ex: &lt;https://example.org/&gt; .</code>
+            </p>
           </div>
 
           <div class="field">
@@ -91,7 +96,10 @@
                 placeholder="data.csv"
               />
             </div>
-            <p class="help">[required] The CSV file to process, interpreted as an absolute path or a path relative to this file.</p>
+            <p class="help">
+              [required] The CSV file to process, interpreted as an absolute
+              path or a path relative to this file.
+            </p>
           </div>
 
           <div class="field">
@@ -105,7 +113,10 @@
                 placeholder="./output"
               />
             </div>
-            <p class="help">An optional directory for the output, defaults to the same directory as the input file.</p>
+            <p class="help">
+              An optional directory for the output, defaults to the same
+              directory as the input file.
+            </p>
           </div>
 
           <div class="field">
@@ -119,7 +130,10 @@
                 placeholder="ex:graph"
               />
             </div>
-            <p class="help">An optional named graph to use for the generated RDF. If given, the output format will be .trig otherwise .ttl.</p>
+            <p class="help">
+              An optional named graph to use for the generated RDF. If given,
+              the output format will be .trig otherwise .ttl.
+            </p>
           </div>
 
           <div class="field">
@@ -133,7 +147,10 @@
                 placeholder="https://example.org/pid/"
               />
             </div>
-            <p class="help">A namespace to use when minting IRIs for the identifier. If not given, the identifier will be assumed to already be a valid IRI.</p>
+            <p class="help">
+              A namespace to use when minting IRIs for the identifier. If not
+              given, the identifier will be assumed to already be a valid IRI.
+            </p>
           </div>
 
           <div class="field">
@@ -148,7 +165,10 @@
                 placeholder="id"
               />
             </div>
-            <p class="help">[required] Name of column with the unique identifiers for each row.</p>
+            <p class="help">
+              [required] Name of column with the unique identifiers for each
+              row.
+            </p>
           </div>
 
           <div class="field">
@@ -163,29 +183,26 @@
                 placeholder="schema:CreativeWork, ex:Resource"
               />
             </div>
-            <p class="help">[required] Classes to assign to each resource, can have as many as you want.</p>
+            <p class="help">
+              [required] Classes to assign to each resource, can have as many as
+              you want.
+            </p>
           </div>
 
           <div class="field">
             <label class="label">Columns:</label>
-            <p class="help">Add column specifications. Available properties and their default values are specified in the schema.</p>
-            <details>
-              <summary>Column Property Usage Notes</summary>
-              <ul>
-                <li><strong>column:</strong> [required] Name of the column.</li>
-                <li><strong>predicate:</strong> [required] Predicate to use in RDF.</li>
-                <li><strong>datatype:</strong> Datatype of the column data. Default is <code>xsd:string</code>.</li>
-                <li><strong>separator:</strong> A separator used to delineate multiple values per cell. Default is <code>null</code>.</li>
-                <li><strong>as_iri:</strong> If the value should be treated as an IRI, set this to <code>true</code>. Default is <code>false</code>.</li>
-                <li><strong>namespace:</strong> A namespace to use for the IRI. Only used if <code>as_iri</code> is <code>true</code> and the values for this column are not already IRIs.</li>
-                <li><strong>as_uuid:</strong> If <code>true</code>, create a UUID for the IRI instead of just using the values from the column. Only used if <code>as_iri</code> is <code>true</code>. Default is <code>false</code>.</li>
-                <li><strong>ignore_case:</strong> If <code>true</code>, apply a lowercase transformation on the column values before minting the UUID. Only used if <code>as_iri</code> is <code>true</code>. Default is <code>false</code>.</li>
-                <li><strong>label:</strong> If given, declare a label for the minted IRI using this predicate.</li>
-                <li><strong>type:</strong> If given, declare the minted IRI as an instance of this class.</li>
-              </ul>
-            </details>
+            <p class="help">
+              Add column specifications. Available properties and their default
+              values are specified in the schema.
+            </p>
             <div id="columnsContainer"></div>
-            <button class="button is-link is-light" type="button" id="addColumn">Add Column</button>
+            <button
+              class="button is-link is-light"
+              type="button"
+              id="addColumn"
+            >
+              Add Column
+            </button>
           </div>
 
           <div class="field">
@@ -193,38 +210,40 @@
             <details>
               <summary>Template Information</summary>
               <p>
-                An optional template to be evaluated for each row of the data. The
-                template must be in turtle format and valid RDF after variable
-                substitutions.
+                An optional template to be evaluated for each row of the data.
+                The template must be in turtle format and valid RDF after
+                variable substitutions.
               </p>
               <ul>
                 <li>
-                  The template can contain placeholders like <code>{id}</code> or
-                  <code>{author}</code>, where each placeholder is the name of a
-                  column in the source data.
+                  The template can contain placeholders like
+                  <code>{id}</code> or <code>{author}</code>, where each
+                  placeholder is the name of a column in the source data.
                 </li>
                 <li>
-                  If the placeholder is the <code>{identifier}</code> column, it will
-                  be substituted with the computed IRI for that column instead of just
-                  the string.
+                  If the placeholder is the <code>{identifier}</code> column, it
+                  will be substituted with the computed IRI for that column
+                  instead of just the string.
                 </li>
-                <li>Other columns may be made as IRIs manually in the template.</li>
+                <li>
+                  Other columns may be made as IRIs manually in the template.
+                </li>
                 <li>
                   Limitations:
                   <ul>
                     <li>
-                      It is not possible to split multiple values out of a cell, like
-                      you can with the column maps.
+                      It is not possible to split multiple values out of a cell,
+                      like you can with the column maps.
                     </li>
                     <li>
-                      Column names with punctuation characters or whitespace cannot be
-                      processed. For the most reliable experience, try to ensure that
-                      column names do not contain punctuation characters or
-                      whitespace. Underscores are accepted.
+                      Column names with punctuation characters or whitespace
+                      cannot be processed. For the most reliable experience, try
+                      to ensure that column names do not contain punctuation
+                      characters or whitespace. Underscores are accepted.
                     </li>
                     <li>
-                      All single/double quote chars and newlines will be removed from
-                      the column values to avoid breaking the RDF.
+                      All single/double quote chars and newlines will be removed
+                      from the column values to avoid breaking the RDF.
                     </li>
                   </ul>
                 </li>
@@ -232,11 +251,12 @@
               <p>Notes:</p>
               <ul>
                 <li>
-                  The template can use the prefixes declared in the prefixes section
-                  of this document.
+                  The template can use the prefixes declared in the prefixes
+                  section of this document.
                 </li>
                 <li>
-                  The template will be evaluated once for each row of the dataset.
+                  The template will be evaluated once for each row of the
+                  dataset.
                 </li>
               </ul>
             </details>
@@ -253,7 +273,9 @@
 
           <div class="field">
             <div class="control">
-              <button class="button is-primary" type="submit">Download YAML</button>
+              <button class="button is-primary" type="submit">
+                Download YAML
+              </button>
             </div>
           </div>
         </form>
@@ -282,7 +304,7 @@
           <p class="help">[required] Predicate to use in RDF.</p>
 
           <label>Datatype:</label>
-          <input type="text" name="column[${columnCount}][datatype]" value="xsd:string" placeholder="xsd:string" />
+          <input type="text" name="column[${columnCount}][datatype]" placeholder="xsd:string" />
           <p class="help">Datatype of the column data. Default is <code>xsd:string</code>.</p>
 
           <label>Separator:</label>
