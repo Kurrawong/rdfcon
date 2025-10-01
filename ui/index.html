@@ -169,6 +169,21 @@
           <div class="field">
             <label class="label">Columns:</label>
             <p class="help">Add column specifications. Available properties and their default values are specified in the schema.</p>
+            <details>
+              <summary>Column Property Usage Notes</summary>
+              <ul>
+                <li><strong>column:</strong> [required] Name of the column.</li>
+                <li><strong>predicate:</strong> [required] Predicate to use in RDF.</li>
+                <li><strong>datatype:</strong> Datatype of the column data. Default is <code>xsd:string</code>.</li>
+                <li><strong>separator:</strong> A separator used to delineate multiple values per cell. Default is <code>null</code>.</li>
+                <li><strong>as_iri:</strong> If the value should be treated as an IRI, set this to <code>true</code>. Default is <code>false</code>.</li>
+                <li><strong>namespace:</strong> A namespace to use for the IRI. Only used if <code>as_iri</code> is <code>true</code> and the values for this column are not already IRIs.</li>
+                <li><strong>as_uuid:</strong> If <code>true</code>, create a UUID for the IRI instead of just using the values from the column. Only used if <code>as_iri</code> is <code>true</code>. Default is <code>false</code>.</li>
+                <li><strong>ignore_case:</strong> If <code>true</code>, apply a lowercase transformation on the column values before minting the UUID. Only used if <code>as_iri</code> is <code>true</code>. Default is <code>false</code>.</li>
+                <li><strong>label:</strong> If given, declare a label for the minted IRI using this predicate.</li>
+                <li><strong>type:</strong> If given, declare the minted IRI as an instance of this class.</li>
+              </ul>
+            </details>
             <div id="columnsContainer"></div>
             <button class="button is-link is-light" type="button" id="addColumn">Add Column</button>
           </div>
