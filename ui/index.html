@@ -194,11 +194,17 @@
                 prefixes[prefix] = `<${uri}>`;
               });
             }
-            data.prefixes = Object.entries(prefixes).map(([prefix, uri]) => ({
-              [prefix]: uri,
-            }));
+            data.prefixes = Object.entries(prefixes).map(([prefix, uri]) => ({ [prefix]: uri }));
 
-            const yamlData = jsyaml.dump(data);
+            // Reorder data to place columns just above template
+            const reorderedData = {
+              ...data,
+              columns: data.columns,
+              template: data.template,
+            };
+            delete reorderedData.template; // Remove template from original position
+
+            const yamlData = jsyaml.dump(reorderedData);
             const blob = new Blob([yamlData], { type: "text/yaml" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
