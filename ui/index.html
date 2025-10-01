@@ -32,9 +32,13 @@
   <body>
     <h1>YAML Schema Form</h1>
     <form id="schemaForm">
-      <label for="prefixes">Prefixes (comma-separated):</label>
-      <small>Specify RDF prefixes used in this document.</small>
-      <input type="text" id="prefixes" name="prefixes" />
+      <label for="prefixes">Prefix:</label>
+      <small>Specify RDF prefix used in this document.</small>
+      <input type="text" id="prefix" name="prefix" />
+
+      <label for="namespace">Namespace:</label>
+      <small>Specify RDF namespace for the prefix.</small>
+      <input type="text" id="namespace" name="namespace" />
 
       <label for="infile">Input File:</label>
       <small>[required] The CSV file to process, interpreted as an absolute path or a path relative to this file.</small>
@@ -79,7 +83,7 @@
           const formData = new FormData(event.target);
           const data = {};
           formData.forEach((value, key) => {
-            if (key === "prefixes" || key === "types") {
+            if (key === "types") {
               data[key] = value.split(",").map((item) => item.trim());
             } else if (key === "columns") {
               try {
@@ -92,6 +96,12 @@
               data[key] = value || null;
             }
           });
+
+          const prefixes = document.getElementById("prefix").value.split(",").map((prefix, index) => {
+            const namespace = document.getElementById("namespace").value.split(",")[index];
+            return `${prefix.trim()}: <${namespace.trim()}>`;
+          });
+          data.prefixes = prefixes;
 
           const yamlData = jsyaml.dump(data);
           const blob = new Blob([yamlData], { type: "text/yaml" });
