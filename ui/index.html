@@ -33,39 +33,67 @@
     <h1>YAML Schema Form</h1>
     <form id="schemaForm">
       <label for="prefixes">Prefixes (Turtle format):</label>
-      <small>Enter prefixes in Turtle format, e.g., <code>@prefix ex: &lt;https://example.org/&gt; .</code></small>
+      <small
+        >Enter prefixes in Turtle format, e.g.,
+        <code>@prefix ex: &lt;https://example.org/&gt; .</code></small
+      >
       <textarea id="prefixes" name="prefixes" rows="5"></textarea>
 
       <label for="infile">Input File:</label>
-      <small>[required] The CSV file to process, interpreted as an absolute path or a path relative to this file.</small>
+      <small
+        >[required] The CSV file to process, interpreted as an absolute path or
+        a path relative to this file.</small
+      >
       <input type="text" id="infile" name="infile" required />
 
       <label for="outdir">Output Directory:</label>
-      <small>An optional directory for the output, defaults to the same directory as the input file.</small>
+      <small
+        >An optional directory for the output, defaults to the same directory as
+        the input file.</small
+      >
       <input type="text" id="outdir" name="outdir" />
 
       <label for="graph">Graph:</label>
-      <small>An optional named graph to use for the generated RDF. If given, the output format will be .trig otherwise .ttl.</small>
+      <small
+        >An optional named graph to use for the generated RDF. If given, the
+        output format will be .trig otherwise .ttl.</small
+      >
       <input type="text" id="graph" name="graph" />
 
       <label for="namespace">Namespace:</label>
-      <small>A namespace to use when minting IRIs for the identifier. If not given, the identifier will be assumed to already be a valid IRI.</small>
+      <small
+        >A namespace to use when minting IRIs for the identifier. If not given,
+        the identifier will be assumed to already be a valid IRI.</small
+      >
       <input type="text" id="namespace" name="namespace" />
 
       <label for="identifier">Identifier:</label>
-      <small>[required] Name of column with the unique identifiers for each row.</small>
+      <small
+        >[required] Name of column with the unique identifiers for each
+        row.</small
+      >
       <input type="text" id="identifier" name="identifier" required />
 
       <label for="types">Types (comma-separated):</label>
-      <small>[required] Classes to assign to each resource, can have as many as you want.</small>
+      <small
+        >[required] Classes to assign to each resource, can have as many as you
+        want.</small
+      >
       <input type="text" id="types" name="types" required />
 
       <label for="columns">Columns (JSON format):</label>
-      <small>An optional mapping of properties for each column. Available properties and their default values are specified in the schema.</small>
+      <small
+        >An optional mapping of properties for each column. Available properties
+        and their default values are specified in the schema.</small
+      >
       <textarea id="columns" name="columns" rows="5"></textarea>
 
       <label for="template">Template:</label>
-      <small>An optional template to be evaluated for each row of the data. The template must be in turtle format and valid RDF after variable substitutions.</small>
+      <small
+        >An optional template to be evaluated for each row of the data. The
+        template must be in turtle format and valid RDF after variable
+        substitutions.</small
+      >
       <input type="text" id="template" name="template" />
 
       <button type="submit">Download YAML</button>
@@ -95,13 +123,20 @@
 
           const turtlePrefixes = document.getElementById("prefixes").value;
           const graph = new $rdf.graph();
-          $rdf.parse(turtlePrefixes, graph, 'http://example.org/', 'text/turtle');
+          $rdf.parse(
+            turtlePrefixes,
+            graph,
+            "http://example.org/",
+            "text/turtle",
+          );
 
           const prefixes = {};
           graph.namespaces.forEach((uri, prefix) => {
             prefixes[prefix] = `<${uri}>`;
           });
-          data.prefixes = Object.entries(prefixes).map(([prefix, uri]) => `${prefix}: ${uri}`);
+          data.prefixes = Object.entries(prefixes).map(
+            ([prefix, uri]) => `${prefix}: ${uri}`,
+          );
 
           const yamlData = jsyaml.dump(data);
           const blob = new Blob([yamlData], { type: "text/yaml" });
