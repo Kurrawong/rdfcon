@@ -117,11 +117,27 @@
       <button type="button" id="addColumn">Add Column</button>
 
       <label for="template">Template:</label>
-      <small
-        >An optional template to be evaluated for each row of the data. The
-        template must be in turtle format and valid RDF after variable
-        substitutions.</small
-      >
+      <details>
+        <summary>Template Information</summary>
+        <p>An optional template to be evaluated for each row of the data. The template must be in turtle format and valid RDF after variable substitutions.</p>
+        <ul>
+          <li>The template can contain placeholders like <code>{id}</code> or <code>{author}</code>, where each placeholder is the name of a column in the source data.</li>
+          <li>If the placeholder is the <code>{identifier}</code> column, it will be substituted with the computed IRI for that column instead of just the string.</li>
+          <li>Other columns may be made as IRIs manually in the template.</li>
+          <li>Limitations:
+            <ul>
+              <li>It is not possible to split multiple values out of a cell, like you can with the column maps.</li>
+              <li>Column names with punctuation characters or whitespace cannot be processed. For the most reliable experience, try to ensure that column names do not contain punctuation characters or whitespace. Underscores are accepted.</li>
+              <li>All single/double quote chars and newlines will be removed from the column values to avoid breaking the RDF.</li>
+            </ul>
+          </li>
+        </ul>
+        <p>Notes:</p>
+        <ul>
+          <li>The template can use the prefixes declared in the prefixes section of this document.</li>
+          <li>The template will be evaluated once for each row of the dataset.</li>
+        </ul>
+      </details>
       <textarea id="template" name="template" rows="5" placeholder="{id} schema:comment &quot;converted from csv using rdfcon&quot;^^xsd:string ."></textarea>
 
       <button type="submit">Download YAML</button>
