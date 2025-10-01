@@ -3,14 +3,16 @@
 general utility functions to be used in other modules
 """
 
+import logging
 from pathlib import Path
 
 import cerberus
 import yaml
-from logs import logger
 from namespace import NSM
 from rdflib import URIRef
 from schemas import md_schema
+
+logger = logging.getLogger(__name__)
 
 
 def parse_config_from_yaml(spec: Path) -> dict:

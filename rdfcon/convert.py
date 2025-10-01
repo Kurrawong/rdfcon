@@ -4,15 +4,17 @@ This module uses a conversion schema to process csv data into RDF.
 """
 
 import csv
+import logging
 import re
 import string
 import uuid
 from pathlib import Path
 
-from logs import logger
 from namespace import NSM
 from rdflib import Dataset, Graph, Literal, Namespace, URIRef
 from rdflib.namespace import RDF
+
+logger = logging.getLogger(__name__)
 
 
 def get_col_values(
@@ -208,22 +210,22 @@ def templated_expressions(
     return g
 
 
-def convert(data: Path, spec: dict, outdir: Path, limit: int) -> None:
+def convert(infile: Path, spec: dict, outdir: Path, limit: int) -> None:
     d = Dataset()
     graph_name = spec.get("graph")
     g = d.graph(graph_name)
     if graph_name:
-        outfile = (outdir / data.with_suffix(".trig").name).resolve()
+        outfile = (outdir / infile.with_suffix(".trig").name).resolve()
         format = "trig"
     else:
-        outfile = (outdir / data.with_suffix(".ttl").name).resolve()
+        outfile = (outdir / infile.with_suffix(".ttl").name).resolve()
         format = "turtle"
     ns = Namespace(spec["namespace"]) if spec["namespace"] else None
     [g.bind(ns, uri) for ns, uri in NSM.namespaces()]
-    with open(data, "r") as file:
+    with open(infile, "r") as file:
         reader = csv.reader(file)
         headers = next(reader)
-        warn_about_unused_columns(headers=headers, spec=spec, filename=data.name)
+        warn_about_unused_columns(headers=headers, spec=spec, filename=infile.name)
         idcol = get_id_column(headers, spec)
         for i, row in enumerate(reader):
             print(f"processing row {i + 1}", end="\r", flush=True)
