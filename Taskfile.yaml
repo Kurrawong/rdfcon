@@ -9,6 +9,16 @@ tasks:
     desc: list all tasks
     cmd: task -a
 
+  code:
+    desc: lint and format
+    cmds:
+      - uv run black rdfcon
+      - uv run isort rdfcon
+      - uv run ruff check rdfcon
+      - uv run black tests
+      - uv run isort tests
+      - uv run ruff check tests
+
   runExample:
     desc: convert the example data
     cmds:
