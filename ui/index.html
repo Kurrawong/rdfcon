@@ -103,46 +103,47 @@
     <script src="https://unpkg.com/n3/browser/n3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
     <script>
-      document
-        .getElementById("addColumn")
-        .addEventListener("click", function () {
+      let columnCount = 0;
+
+      document.getElementById("addColumn").addEventListener("click", function () {
           const container = document.getElementById("columnsContainer");
           const columnDiv = document.createElement("div");
           columnDiv.classList.add("column-spec");
 
           columnDiv.innerHTML = `
           <label>Column Name:</label>
-          <input type="text" name="column" required />
+          <input type="text" name="column[${columnCount}][name]" required />
 
           <label>Predicate:</label>
-          <input type="text" name="predicate" required />
+          <input type="text" name="column[${columnCount}][predicate]" required />
 
           <label>Datatype:</label>
-          <input type="text" name="datatype" value="xsd:string" />
+          <input type="text" name="column[${columnCount}][datatype]" value="xsd:string" />
 
           <label>Separator:</label>
-          <input type="text" name="separator" />
+          <input type="text" name="column[${columnCount}][separator]" />
 
           <label>As IRI:</label>
-          <input type="checkbox" name="as_iri" />
+          <input type="checkbox" name="column[${columnCount}][as_iri]" />
 
           <label>Namespace:</label>
-          <input type="text" name="namespace" />
+          <input type="text" name="column[${columnCount}][namespace]" />
 
           <label>As UUID:</label>
-          <input type="checkbox" name="as_uuid" />
+          <input type="checkbox" name="column[${columnCount}][as_uuid]" />
 
           <label>Ignore Case:</label>
-          <input type="checkbox" name="ignore_case" />
+          <input type="checkbox" name="column[${columnCount}][ignore_case]" />
 
           <label>Label:</label>
-          <input type="text" name="label" />
+          <input type="text" name="column[${columnCount}][label]" />
 
           <label>Type:</label>
-          <input type="text" name="type" />
+          <input type="text" name="column[${columnCount}][type]" />
 
           <button type="button" class="removeColumn">Remove</button>
         `;
+        columnCount++;
 
           container.appendChild(columnDiv);
 
