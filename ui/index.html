@@ -94,12 +94,12 @@
         template must be in turtle format and valid RDF after variable
         substitutions.</small
       >
-      <input type="text" id="template" name="template" />
+      <textarea id="template" name="template" rows="5"></textarea>
 
       <button type="submit">Download YAML</button>
     </form>
 
-    <script src="https://unpkg.com/n3@1.11.0/browser/n3.min.js"></script>
+    <script src="https://unpkg.com/n3/browser/n3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
     <script>
       document
@@ -122,7 +122,6 @@
               data[key] = value || null;
             }
           });
-
           const turtlePrefixes = document.getElementById("prefixes").value;
           const parser = new N3.Parser();
           const prefixes = {};
@@ -137,20 +136,19 @@
                 prefixes[prefix] = `<${uri}>`;
               });
             }
+            data.prefixes = Object.entries(prefixes).map(([prefix, uri]) => ({
+              [prefix]: uri,
+            }));
+
+            const yamlData = jsyaml.dump(data);
+            const blob = new Blob([yamlData], { type: "text/yaml" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "spec.yaml";
+            a.click();
+            URL.revokeObjectURL(url);
           });
-
-          data.prefixes = Object.entries(prefixes).map(
-            ([prefix, uri]) => `${prefix}: ${uri}`,
-          );
-
-          const yamlData = jsyaml.dump(data);
-          const blob = new Blob([yamlData], { type: "text/yaml" });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = "schema.yaml";
-          a.click();
-          URL.revokeObjectURL(url);
         });
     </script>
   </body>
