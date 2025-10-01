@@ -105,7 +105,9 @@
     <script>
       let columnCount = 0;
 
-      document.getElementById("addColumn").addEventListener("click", function () {
+      document
+        .getElementById("addColumn")
+        .addEventListener("click", function () {
           const container = document.getElementById("columnsContainer");
           const columnDiv = document.createElement("div");
           columnDiv.classList.add("column-spec");
@@ -143,7 +145,7 @@
 
           <button type="button" class="removeColumn">Remove</button>
         `;
-        columnCount++;
+          columnCount++;
 
           container.appendChild(columnDiv);
 
@@ -194,17 +196,11 @@
                 prefixes[prefix] = `<${uri}>`;
               });
             }
-            data.prefixes = Object.entries(prefixes).map(([prefix, uri]) => ({ [prefix]: uri }));
+            data.prefixes = Object.entries(prefixes).map(([prefix, uri]) => ({
+              [prefix]: uri,
+            }));
 
-            // Reorder data to place columns just above template
-            const { template, ...rest } = data;
-            const reorderedData = {
-              ...rest,
-              columns: data.columns,
-              template: template,
-            };
-
-            const yamlData = jsyaml.dump(reorderedData);
+            const yamlData = jsyaml.dump(data);
             const blob = new Blob([yamlData], { type: "text/yaml" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
