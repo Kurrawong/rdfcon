@@ -298,7 +298,7 @@
 
           columnDiv.innerHTML = `
           <label>Column Name:</label>
-          <input type="text" name="column[${columnCount}][name]" required placeholder="headline" />
+          <input type="text" name="column[${columnCount}][column]" required placeholder="headline" />
           <p class="help">[required] Name of the column.</p>
 
           <label>Predicate:</label>
@@ -370,7 +370,13 @@
                 if (!data.columns[columnIndex]) {
                   data.columns[columnIndex] = {};
                 }
-                data.columns[columnIndex][columnKey] = value || null;
+                if (value === "on") {
+                  data.columns[columnIndex][columnKey] = true;
+                } else if (value === "off") {
+                  data.columns[columnIndex][columnKey] = false;
+                } else {
+                  data.columns[columnIndex][columnKey] = value || null;
+                }
               }
             } else {
               data[key] = value || null;
