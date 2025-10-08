@@ -7,6 +7,7 @@ called from the command line.
 import argparse
 import logging
 import logging.config
+import webbrowser
 from pathlib import Path
 
 from config.logs import logging_config
@@ -24,11 +25,20 @@ def cli() -> argparse.Namespace:
         add_help=True,
         allow_abbrev=True,
     )
-    parser.add_argument("spec", help="YAML conversion specification file")
+    parser.add_argument("spec", nargs="?", help="YAML conversion specification file")
     parser.add_argument(
         "-n", "--limit", help="Max number of rows to process", default=0, type=int
     )
+    parser.add_argument(
+        "--ui",
+        action="store_true",
+        help="Open a browser based ui for creating spec files",
+    )
     args = parser.parse_args()
+    if not any([args.spec, args.ui]):
+        parser.error("spec is required unless --ui is given")
+    if all([args.spec, args.ui]):
+        parser.error("illegal flag combination, only one of spec or --ui can be given")
     return args
 
 
@@ -58,6 +68,9 @@ def resolve_paths(default_dir: Path, spec: dict) -> tuple[Path]:
 
 if __name__ == "__main__":
     args = cli()
+    if args.ui:
+        webbrowser.open(str(Path(__file__).parent.parent / "ui" / "index.html"))
+        exit()
     spec_path = Path(args.spec)
     spec = get_spec(path=spec_path)
     infile, outdir = resolve_paths(default_dir=spec_path.parent, spec=spec)
