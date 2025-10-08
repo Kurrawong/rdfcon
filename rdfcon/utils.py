@@ -13,15 +13,13 @@ from rdflib import URIRef
 from rdfcon.namespace import NSM
 from rdfcon.schemas import md_schema
 
-logger = logging.getLogger(__name__)
-
 
 def parse_config_from_yaml(spec: Path) -> dict:
     with open(spec, "r") as file:
         try:
             parsed_spec = yaml.safe_load(file)
         except yaml.YAMLError as e:
-            logger.error(f"Error loading {spec.name}: {e}")
+            logging.error(f"Error loading {spec.name}: {e}")
     v = cerberus.Validator(md_schema)
     if not v.validate(parsed_spec):
         raise cerberus.DocumentError(f"Could not validate {spec.name}: {v.errors}")

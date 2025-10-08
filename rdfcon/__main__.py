@@ -14,9 +14,6 @@ from rdfcon.config.logs import logging_config
 from rdfcon.convert import convert
 from rdfcon.utils import parse_config_from_yaml
 
-logging.config.dictConfig(logging_config)
-logger = logging.getLogger(__name__)
-
 
 def get_spec(path: Path) -> dict:
     if not path.exists():
@@ -58,7 +55,13 @@ def cli() -> argparse.Namespace:
         action="store_true",
         help="Open a browser based ui for creating spec files",
     )
+    parser.add_argument(
+        "-v", "--verbose", help="more verbose logging", action="store_true"
+    )
     args = parser.parse_args()
+    if args.verbose:
+        logging_config["handlers"]["console"]["level"] = "DEBUG"
+    logging.config.dictConfig(logging_config)
     if not any([args.spec, args.ui]):
         parser.error("spec is required unless --ui is given")
     if all([args.spec, args.ui]):
@@ -71,10 +74,10 @@ def cli() -> argparse.Namespace:
     spec = get_spec(path=spec_path)
     infile, outdir = resolve_paths(default_dir=spec_path.parent, spec=spec)
 
-    logger.info(f"using dataset configuration {spec_path} for {infile}")
-    logger.info("-" * 80)
-    logger.info(__import__("pprint").pformat(spec))
-    logger.info("-" * 80)
+    logging.debug("Parsed conversion doc")
+    logging.debug("-" * 80)
+    logging.debug(__import__("pprint").pformat(spec))
+    logging.debug("-" * 80)
 
     convert(infile=infile, spec=spec, outdir=outdir, limit=args.limit)
 

@@ -15,8 +15,6 @@ from rdflib.namespace import RDF
 
 from rdfcon.namespace import NSM
 
-logger = logging.getLogger(__name__)
-
 
 def get_col_values(
     col: str,
@@ -76,7 +74,7 @@ def get_col_values(
             try:
                 col_values.append(Literal(stripped, datatype=datatype))
             except ValueError as e:
-                logger.error(f"Could not parse {value} as datatype {datatype}: {e}")
+                logging.error(f"Could not parse {value} as datatype {datatype}: {e}")
 
     return col_values, g
 
@@ -89,7 +87,7 @@ def warn_about_unused_columns(headers: list[str], spec: dict, filename: str) -> 
         mapped_columns.extend(re.findall(r"\{(.*?)\}", spec["template"]))
     unmapped_columns = [column for column in headers if column not in mapped_columns]
     if unmapped_columns:
-        logger.warning(
+        logging.warning(
             f"WARNING: {filename} contains {len(unmapped_columns)} unmapped columns: {unmapped_columns}"
         )
     return
@@ -243,7 +241,9 @@ def convert(infile: Path, spec: dict, outdir: Path, limit: int) -> None:
                 continue
             g += row_to_graph(headers, spec, iri, row)
             g += templated_expressions(headers, row, iri, spec)
-        print("done".ljust(100, " "))
+        print("".ljust(100, " "), end="\r", flush=True)
     g.serialize(destination=outfile, format=format)
-    logger.info(f"{len(g)} {'quads' if graph_name else 'triples'} written to {outfile}")
+    logging.info(
+        f"{len(g)} {'quads' if graph_name else 'triples'} written to {outfile}"
+    )
     return
