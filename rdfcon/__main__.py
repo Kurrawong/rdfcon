@@ -39,7 +39,7 @@ def resolve_paths(default_dir: Path, spec: dict) -> tuple[Path]:
     return infile, outdir
 
 
-def cli() -> argparse.Namespace:
+def main():
     parser = argparse.ArgumentParser(
         prog="convert.py",
         description="convert tabular data to RDF using a YAML specification file",
@@ -83,4 +83,4 @@ def cli() -> argparse.Namespace:
 
 
 if __name__ == "__main__":
-    cli()
+    main()
