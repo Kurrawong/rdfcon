@@ -1,6 +1,4 @@
-import datetime
 import logging
-from pathlib import Path
 
 
 class ColorFormatter(logging.Formatter):
@@ -27,18 +25,12 @@ class ColorFormatter(logging.Formatter):
 
 logging_config = {
     "version": 1,
-    "root": {"level": "NOTSET", "handlers": ["console", "file"]},
+    "root": {"level": "NOTSET", "handlers": ["console"]},
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
             "level": "INFO",
             "formatter": "color",
-        },
-        "file": {
-            "class": "logging.FileHandler",
-            "level": "DEBUG",
-            "formatter": "color",
-            "filename": f"{Path.cwd()}/{datetime.date.today().isoformat()}.log",
         },
     },
     "formatters": {

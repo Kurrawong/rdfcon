@@ -41,24 +41,36 @@
         border: 1px solid #ccc;
         border-radius: 4px;
         box-sizing: border-box;
-      }
-      button {
-        padding: 10px 15px;
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-      }
-      button:hover {
-        background-color: #0056b3;
+        margin-top: 4px;
       }
       .column-spec {
         border: 1px solid #ddd;
         padding: 10px;
         border-radius: 4px;
         background-color: #f9f9f9;
+        margin-bottom: 4px;
+      }
+      summary {
+        margin-bottom: 4px;
+      }
+      summary:hover {
+        cursor: pointer;
+      }
+      #clearInfile {
+        cursor: pointer;
+        font-size: small;
+        text-decoration: underline;
+      }
+      .required {
+        font-weight: bold;
+        color: darkred;
+      }
+      .hint {
+        font-size: small;
+        color: gray;
+      }
+      input[type="checkbox"] {
+        width: auto;
       }
     </style>
   </head>
@@ -66,7 +78,27 @@
     <section class="section">
       <div class="container">
         <h1 class="title">RDFCon spec creator</h1>
-        <form id="schemaForm">
+        <div class="container">
+          <details open>
+            <summary><strong>Usage</strong></summary>
+            <p>
+              This form will help you create a conversion spec for use with the
+              <em>rdfcon</em> program.
+            </p>
+            <p>
+              Fill out the <span class="required">[required]</span> information
+              and then press
+              <strong>Download YAML</strong>
+              to generate the document.
+            </p>
+            <p>
+              Once you have the YAML file downloaded you can provide it to the
+              rdfcon program on the command line like so:
+            </p>
+            <p><code>$ rdfcon myfile-rdfcon.yaml</code></p>
+          </details>
+        </div>
+        <form id="schemaForm" autocomplete="off">
           <div class="field">
             <label class="label" for="prefixes"
               >Prefixes (Turtle format):</label
@@ -78,20 +110,26 @@
                 name="prefixes"
                 rows="5"
                 placeholder="@prefix ex: <https://example.org/> ."
-              ></textarea>
+              >
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .</textarea
+              >
             </div>
             <p class="help">
               Enter prefixes in Turtle format, e.g.,
               <code>@prefix ex: &lt;https://example.org/&gt; .</code>
+              Prefixes declared here, can then be referenced in the other fields
+              of the document. like <code>xsd:string</code>
             </p>
           </div>
 
           <div class="field">
             <label class="label" for="infile">Input File:</label>
+            <span id="clearInfile">clear</span>
             <div class="control">
               <input
                 class="input"
-                type="text"
+                type="file"
+                accept=".csv"
                 id="infile"
                 name="infile"
                 required
@@ -99,8 +137,13 @@
               />
             </div>
             <p class="help">
-              [required] The CSV file to process, interpreted as an absolute
-              path or a path relative to this file.
+              <span class="required">[required]</span> The CSV file to process.
+            </p>
+            <p class="hint">
+              Due to browser security restrictions only the file name can be
+              acquired. Because of this, you may need to manually update the
+              'infile' property with the full path after downloading. The infile
+              path can be an absolute path or a path relative to the spec file.
             </p>
           </div>
 
@@ -134,7 +177,12 @@
             </div>
             <p class="help">
               An optional named graph to use for the generated RDF. If given,
-              the output format will be .trig otherwise .ttl.
+              rdfcon will generate <code>.trig</code> otherwise
+              <code>.ttl</code>.
+            </p>
+            <p class="hint">
+              IRIs can be given with or without surrounding angle brackets, i.e.
+              <code>&lt;https://example.org/predicate&gt;</code>
             </p>
           </div>
 
@@ -153,6 +201,10 @@
               A namespace to use when minting IRIs for the identifier. If not
               given, the identifier will be assumed to already be a valid IRI.
             </p>
+            <p class="hint">
+              IRIs can be given with or without surrounding angle brackets, i.e.
+              <code>&lt;https://example.org/predicate&gt;</code>
+            </p>
           </div>
 
           <div class="field">
@@ -165,11 +217,17 @@
                 name="identifier"
                 required
                 placeholder="id"
+                list="csvHeaders"
               />
             </div>
             <p class="help">
-              [required] Name of column with the unique identifiers for each
-              row.
+              <span class="required">[required]</span> Name of the column with
+              unique identifiers for each row.
+            </p>
+            <p>
+              <span class="hint"
+                >press down-arrow for autocomplete suggestions</span
+              >
             </p>
           </div>
 
@@ -186,17 +244,15 @@
               />
             </div>
             <p class="help">
-              [required] Classes to assign to each resource, can have as many as
-              you want.
+              <span class="required">[required]</span> Classes to assign to each
+              resource, can have as many as you want.
             </p>
           </div>
 
           <div class="field">
+            <datalist id="csvHeaders"></datalist>
             <label class="label">Columns:</label>
-            <p class="help">
-              Add column specifications. Available properties and their default
-              values are specified in the schema.
-            </p>
+            <p class="help">Add column specifications.</p>
             <div id="columnsContainer"></div>
             <button
               class="button is-link is-light"
@@ -209,7 +265,7 @@
 
           <div class="field">
             <label class="label" for="template">Template:</label>
-            <details>
+            <details class="container">
               <summary>Template Information</summary>
               <p>
                 An optional template to be evaluated for each row of the data.
@@ -287,6 +343,36 @@
     <script src="https://unpkg.com/n3/browser/n3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
     <script>
+      // clear inFile selection
+      document
+        .getElementById("clearInfile")
+        .addEventListener("click", function () {
+          document.getElementById("infile").value = "";
+        });
+
+      // auto suggest column names from csv headers
+      document.getElementById("infile").addEventListener("change", function () {
+        const file = this.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const text = e.target.result;
+          // Get the first line for headers
+          const firstLine = text.split(/\r?\n/)[0];
+          // Split headers (basic CSV parse; for more complex CSVs, use a library)
+          const headers = firstLine.split(",");
+          const datalist = document.getElementById("csvHeaders");
+          datalist.innerHTML = "";
+          headers.forEach((header) => {
+            const opt = document.createElement("option");
+            opt.value = header.trim();
+            datalist.appendChild(opt);
+          });
+        };
+        reader.readAsText(file);
+      });
+
       let columnCount = 0;
 
       document
@@ -297,22 +383,40 @@
           columnDiv.classList.add("column-spec");
 
           columnDiv.innerHTML = `
+          <details open>
+          <summary>Column: ${columnCount + 1}
+          <button style="margin-left: 10px" type="button" class="removeColumn">Remove</button>
+          </summary>
           <label>Column Name:</label>
-          <input type="text" name="column[${columnCount}][name]" required placeholder="headline" />
-          <p class="help">[required] Name of the column.</p>
+          <input type="text" name="column[${columnCount}][column]" required placeholder="ColumnName" list="csvHeaders" />
+          <p class="help"><span class="required">[required]</span> Name of the column.</p><p class="hint">press down-arrow for suggestions</p>
 
           <label>Predicate:</label>
           <input type="text" name="column[${columnCount}][predicate]" required placeholder="schema:headline" />
-          <p class="help">[required] Predicate to use in RDF.</p>
+          <p class="help"><span class="required">[required]</span> Predicate to use in RDF.</p>
 
           <label>Datatype:</label>
-          <input type="text" name="column[${columnCount}][datatype]" placeholder="xsd:string" />
+          <input type="text" name="column[${columnCount}][datatype]" placeholder="xsd:string" list="datatypes" />
+          <datalist id="datatypes">
+            <option value="xsd:date">
+            <option value="xsd:dateTime">
+            <option value="xsd:token">
+            <option value="xsd:anyURI">
+            <option value="xsd:int">
+            <option value="xsd:float">
+            <option value="xsd:string">
+          </datalist>
           <p class="help">Datatype of the column data. Default is <code>xsd:string</code>.</p>
 
+          <details>
+          <summary>Transformations<br /></summary>
           <label>Separator:</label>
           <input type="text" name="column[${columnCount}][separator]" placeholder="||" />
           <p class="help">A separator used to delineate multiple values per cell. Default is <code>null</code>.</p>
+          </details>
 
+          <details>
+          <summary>IRI Creation<br /></summary>
           <label>As IRI:</label>
           <input type="checkbox" name="column[${columnCount}][as_iri]" />
           <p class="help">If the value should be treated as an IRI, set this to <code>true</code>. Default is <code>false</code>.</p>
@@ -331,13 +435,13 @@
 
           <label>Label:</label>
           <input type="text" name="column[${columnCount}][label]" placeholder="schema:name" />
-          <p class="help">If given, declare a label for the minted IRI using this predicate.</p>
+          <p class="help">If given, declare a label for the minted IRI using this predicate and the original value of the cell.</p>
 
           <label>Type:</label>
           <input type="text" name="column[${columnCount}][type]" placeholder="schema:Text" />
           <p class="help">If given, declare the minted IRI as an instance of this class.</p>
-
-          <button type="button" class="removeColumn">Remove</button>
+          </details>
+          </details>
         `;
           columnCount++;
 
@@ -362,6 +466,10 @@
           formData.forEach((value, key) => {
             if (key === "types") {
               data[key] = value.split(",").map((item) => item.trim());
+            } else if (key === "infile") {
+              data[key] = value.name;
+            } else if (key === "identifier") {
+              data[key] = value.replaceAll('"', "");
             } else if (key.startsWith("column")) {
               const columnIndexMatch = key.match(/column\[(\d+)\]/);
               if (columnIndexMatch) {
@@ -370,7 +478,18 @@
                 if (!data.columns[columnIndex]) {
                   data.columns[columnIndex] = {};
                 }
-                data.columns[columnIndex][columnKey] = value || null;
+                if (value === "on") {
+                  data.columns[columnIndex][columnKey] = true;
+                } else if (value === "off") {
+                  data.columns[columnIndex][columnKey] = false;
+                } else {
+                  if (columnKey === "column") {
+                    data.columns[columnIndex][columnKey] =
+                      value.replaceAll('"', "") || null;
+                  } else {
+                    data.columns[columnIndex][columnKey] = value || null;
+                  }
+                }
               }
             } else {
               data[key] = value || null;
@@ -383,6 +502,9 @@
           parser.parse(turtlePrefixes, (error, quad, prefixesMap) => {
             if (error) {
               console.error(error);
+              window.alert(
+                "Could not parse the given prefixes, please double check that it is valid RDF",
+              );
               return;
             }
             if (prefixesMap) {
@@ -406,7 +528,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = "spec.yaml";
+            a.download = `${cleanData["infile"].substring(0, cleanData["infile"].length - 4)}-rdfcon.yaml`;
             a.click();
             URL.revokeObjectURL(url);
           });
