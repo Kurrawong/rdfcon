@@ -23,7 +23,7 @@ pythonpath = ["rdfcon"]
 testpaths = ["tests"]
 
 [project.scripts]
-rdfcon = "rdfcon"
+rdfcon = "rdfcon:__main__"
 
 [tool.isort]
 profile = "black"
