@@ -34,11 +34,26 @@ ex:graph {
         schema:headline "Publication 3"^^xsd:string ;
         schema:keywords "economics and 'stuff'"^^xsd:string .
 
+    pid:4 a ex:Resource,
+            schema:CreativeWork ;
+        ex:reviewer "homer s"^^xsd:string,
+            "stewie g"^^xsd:string ;
+        schema:author agent:4 ;
+        schema:comment "converted from csv using rdfcon"^^xsd:string ;
+        schema:datePublished "2025-10-01"^^xsd:date ;
+        schema:genre genre:0f12ee10-f259-3df6-a44a-1ef4febe58fa ;
+        schema:headline "Publication 4"^^xsd:string .
+
     agent:1 schema:name "jovi, bon"^^xsd:string .
 
     agent:2 schema:name "joel mangione"^^xsd:string .
 
     agent:3 schema:name "dwayne the rock johnson"^^xsd:string .
+
+    agent:4 schema:name "cleary, n"^^xsd:string .
+
+    genre:0f12ee10-f259-3df6-a44a-1ef4febe58fa a schema:Text ;
+        schema:name "category c"^^xsd:string .
 
     genre:a4969d28-ad62-3940-9f3c-2cdec34989dd a schema:Text ;
         schema:name "category b"^^xsd:string .

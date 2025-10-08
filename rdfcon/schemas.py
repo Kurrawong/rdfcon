@@ -24,7 +24,7 @@ md_schema = {
     "types": {
         "type": "list",
         "schema": {"type": "string"},
-        "required": True,
+        "required": False,
     },
     "columns": {
         "type": "list",
@@ -39,6 +39,11 @@ md_schema = {
                     "default": "<http://www.w3.org/2001/XMLSchema#string>",
                 },
                 "separator": {"type": "string", "default": None, "nullable": True},
+                "regex": {
+                    "type": "boolean",
+                    "default": False,
+                    "nullable": True,
+                },
                 "as_iri": {"type": "boolean", "default": False},
                 "namespace": {"type": "string", "default": None, "nullable": True},
                 "as_uuid": {"type": "boolean", "default": False},
