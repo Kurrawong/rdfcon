@@ -117,8 +117,9 @@ def row_to_graph(headers: list[str], spec: dict, iri: URIRef, row: list) -> Grap
     g = Graph()
 
     # type declarations
-    for type in spec["types"]:
-        g.add((iri, RDF.type, type))
+    if spec.get("types"):
+        for type in spec["types"]:
+            g.add((iri, RDF.type, type))
 
     # column conversions
     for coldef in spec["columns"]:

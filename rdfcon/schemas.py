@@ -24,7 +24,7 @@ md_schema = {
     "types": {
         "type": "list",
         "schema": {"type": "string"},
-        "required": True,
+        "required": False,
     },
     "columns": {
         "type": "list",

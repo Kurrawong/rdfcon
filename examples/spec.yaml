@@ -29,7 +29,6 @@ identifier: id
 # be a valid IRI.
 namespace: <https://example.org/pid/>
 
-# [ required ]
 # classes to assign to each resource, can have as many as you want.
 types:
   - schema:CreativeWork
