@@ -27,3 +27,7 @@ rdfcon = "rdfcon"
 
 [tool.isort]
 profile = "black"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
