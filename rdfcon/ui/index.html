@@ -411,6 +411,14 @@
           <label>Separator:</label>
           <input type="text" name="column[${columnCount}][separator]" placeholder="||" />
           <p class="help">A separator used to delineate multiple values per cell. Default is <code>null</code>.</p>
+          <p class="hint">
+            Turn Regex on to get more power. for example, to split on all commas preceded by a single
+            letter, <code>(?<=[a-zA-Z],)</code> as in <code>'John D, Kate B' --> ['John D', 'Kate B']</code>
+          </p>
+
+          <label>Regex:</label>
+          <input type="checkbox" name="column[${columnCount}][regex]" />
+          <p class="help">If true, then treat the seperator as a regex pattern</p>
           </details>
 
           <details>

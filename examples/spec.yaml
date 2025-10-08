@@ -42,6 +42,7 @@ types:
 #     predicate: ...                # [ required ] predicate to use in RDF
 #     datatype: xsd:string          #              datatype of the column data
 #     separator: null               #              a separator used to delineate multiple values per cell
+#     regex: false                  #              set true to allow regex patterns in the separator string.
 #     as_iri: false                 #              if the value should be treated as an iri set this to True
 #     namespace: ...                #              a namespace to use for the IRI. Only used if {as_iri} = true and the values for this column are not already IRIs
 #     as_uuid: false                #              if true, create a UUID for the IRI instead of just using the values from the column. Only used if {as_iri} = true.
@@ -75,6 +76,11 @@ columns:
     namespace: <https://example.org/genre/>
     label: schema:name
     type: schema:Text
+
+  - column: reviewer
+    predicate: ex:reviewer
+    separator: '(?<=[a-z]),'
+    regex: true
 
 # An optional template to be evaluated for each row of the data.
 #

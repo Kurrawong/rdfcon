@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 def get_col_values(
     col: str,
     separator: str | None,
+    regex: bool,
     as_iri: bool,
     datatype: URIRef,
     ns: URIRef | None,
@@ -34,7 +35,10 @@ def get_col_values(
     if col.strip() == "":
         return col_values, g
     if separator:
-        values = col.split(separator)
+        if regex:
+            values = re.split(separator, col)
+        else:
+            values = col.split(separator)
     else:
         values = [col]
     for value in values:
@@ -70,7 +74,7 @@ def get_col_values(
 
         else:
             try:
-                col_values.append(Literal(value, datatype=datatype))
+                col_values.append(Literal(stripped, datatype=datatype))
             except ValueError as e:
                 logger.error(f"Could not parse {value} as datatype {datatype}: {e}")
 
@@ -127,6 +131,7 @@ def row_to_graph(headers: list[str], spec: dict, iri: URIRef, row: list) -> Grap
         col_values, graph = get_col_values(
             col=row[col],
             separator=coldef["separator"],
+            regex=coldef["regex"],
             datatype=coldef["datatype"],
             as_iri=coldef["as_iri"],
             ns=coldef["namespace"],
