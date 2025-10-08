@@ -10,36 +10,12 @@ import logging.config
 import webbrowser
 from pathlib import Path
 
-from config.logs import logging_config
-from convert import convert
-from utils import parse_config_from_yaml
+from rdfcon.config.logs import logging_config
+from rdfcon.convert import convert
+from rdfcon.utils import parse_config_from_yaml
 
 logging.config.dictConfig(logging_config)
 logger = logging.getLogger(__name__)
-
-
-def cli() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        prog="convert.py",
-        description="convert tabular data to RDF using a YAML specification file",
-        add_help=True,
-        allow_abbrev=True,
-    )
-    parser.add_argument("spec", nargs="?", help="YAML conversion specification file")
-    parser.add_argument(
-        "-n", "--limit", help="Max number of rows to process", default=0, type=int
-    )
-    parser.add_argument(
-        "--ui",
-        action="store_true",
-        help="Open a browser based ui for creating spec files",
-    )
-    args = parser.parse_args()
-    if not any([args.spec, args.ui]):
-        parser.error("spec is required unless --ui is given")
-    if all([args.spec, args.ui]):
-        parser.error("illegal flag combination, only one of spec or --ui can be given")
-    return args
 
 
 def get_spec(path: Path) -> dict:
@@ -66,8 +42,28 @@ def resolve_paths(default_dir: Path, spec: dict) -> tuple[Path]:
     return infile, outdir
 
 
-if __name__ == "__main__":
-    args = cli()
+def cli() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        prog="convert.py",
+        description="convert tabular data to RDF using a YAML specification file",
+        add_help=True,
+        allow_abbrev=True,
+    )
+    parser.add_argument("spec", nargs="?", help="YAML conversion specification file")
+    parser.add_argument(
+        "-n", "--limit", help="Max number of rows to process", default=0, type=int
+    )
+    parser.add_argument(
+        "--ui",
+        action="store_true",
+        help="Open a browser based ui for creating spec files",
+    )
+    args = parser.parse_args()
+    if not any([args.spec, args.ui]):
+        parser.error("spec is required unless --ui is given")
+    if all([args.spec, args.ui]):
+        parser.error("illegal flag combination, only one of spec or --ui can be given")
+
     if args.ui:
         webbrowser.open(str(Path(__file__).parent.parent / "ui" / "index.html"))
         exit()
@@ -81,3 +77,7 @@ if __name__ == "__main__":
     logger.info("-" * 80)
 
     convert(infile=infile, spec=spec, outdir=outdir, limit=args.limit)
+
+
+if __name__ == "__main__":
+    cli()

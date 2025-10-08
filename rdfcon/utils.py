@@ -8,9 +8,10 @@ from pathlib import Path
 
 import cerberus
 import yaml
-from namespace import NSM
 from rdflib import URIRef
-from schemas import md_schema
+
+from rdfcon.namespace import NSM
+from rdfcon.schemas import md_schema
 
 logger = logging.getLogger(__name__)
 

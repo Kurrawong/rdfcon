@@ -10,9 +10,10 @@ import string
 import uuid
 from pathlib import Path
 
-from namespace import NSM
 from rdflib import Dataset, Graph, Literal, Namespace, URIRef
 from rdflib.namespace import RDF
+
+from rdfcon.namespace import NSM
 
 logger = logging.getLogger(__name__)
 

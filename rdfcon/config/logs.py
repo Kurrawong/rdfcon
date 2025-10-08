@@ -35,7 +35,7 @@ logging_config = {
     },
     "formatters": {
         "color": {
-            "()": "config.logs.ColorFormatter",
+            "()": "rdfcon.config.logs.ColorFormatter",
         }
     },
 }
