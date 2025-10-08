@@ -73,6 +73,10 @@ to produce the following RDF
 .
 ```
 
+> [!TIP]  
+> You can limit the number of rows to process with the `--limit` flag.
+> very handy during testing.
+
 ### Conversion document creation
 
 rdfcon conversion documents are just `YAML` files, so they can be created with any text
