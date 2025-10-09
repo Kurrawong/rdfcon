@@ -8,6 +8,7 @@ import argparse
 import logging
 import logging.config
 import webbrowser
+from importlib.metadata import version
 from pathlib import Path
 
 from rdfcon.config.logs import logging_config
@@ -57,6 +58,12 @@ def main():
     )
     parser.add_argument(
         "-v", "--verbose", help="more verbose logging", action="store_true"
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"rdfcon {version('rdfcon')}",
+        help="Show the version and exit.",
     )
     args = parser.parse_args()
     if args.verbose:
