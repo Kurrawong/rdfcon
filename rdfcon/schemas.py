@@ -42,7 +42,7 @@ md_schema = {
                     "type": "string",
                     "default": None,
                     "nullable": True,
-                    "regex": "^(%[aAbBcdHIjmMpSUwWxXyYzZfGuvV]|[%\-\s:./,]+)+$",
+                    "regex": r"^(%[aAbBcdHIjmMpSUwWxXyYzZfGuvV]|[%\-\s:./,]+)+$",
                 },
                 "separator": {"type": "string", "default": None, "nullable": True},
                 "regex": {
