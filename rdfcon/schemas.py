@@ -38,6 +38,12 @@ md_schema = {
                     "type": "string",
                     "default": "<http://www.w3.org/2001/XMLSchema#string>",
                 },
+                "datestr": {
+                    "type": "string",
+                    "default": None,
+                    "nullable": True,
+                    "regex": "^(%[aAbBcdHIjmMpSUwWxXyYzZfGuvV]|[%\-\s:./,]+)+$",
+                },
                 "separator": {"type": "string", "default": None, "nullable": True},
                 "regex": {
                     "type": "boolean",

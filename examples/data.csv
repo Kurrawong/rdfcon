@@ -1,5 +1,5 @@
-id,headline,author,author_name,date published,keywords,category,reviewer
-1,Publication 1,1,"jovi, bon",2025-03-17,science,category a,
-2,Publication 2,2,joel mangione',2024-07-01,"tech||business and ""stuff""",category A,
-3,Publication 3,3,"dwayne ""the rock"" johnson",2024-07-03,economics and 'stuff',category b,
-4,Publication 4,4,"cleary, n",2025-10-01,,category c,"stewie g, homer s"
+id,headline,author,author_name,date published,date_created,keywords,category,reviewer
+1,Publication 1,1,"jovi, bon",2025-03-17,01/10/2008 09:00,science,category a,
+2,Publication 2,2,joel mangione',2024-07-01,30/09/2020 10:00,"tech||business and ""stuff""",category A,
+3,Publication 3,3,"dwayne ""the rock"" johnson",2024-07-03,02/01/2024 00:00,economics and 'stuff',category b,
+4,Publication 4,4,"cleary, n",2025-10-01,12/07/2004 13:00,,category c,"stewie g, homer s"

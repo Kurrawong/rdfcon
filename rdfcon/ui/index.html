@@ -408,6 +408,14 @@
 
           <details>
           <summary>Transformations<br /></summary>
+          <label>Date Format String:</label>
+          <input type="text" name="column[${columnCount}][datestr]" placeholder="%d/%m/%Y %H:%M:%S" />
+          <p class="help">
+            A <a href="https://docs.python.org/3/library/datetime.html#format-codes" target="_blank">python date format string</a>
+            specifying the structure of the date(time) values in the column,
+            if ommitted then date(time)s will be assumed to be in ISO format.
+          </p>
+
           <label>Separator:</label>
           <input type="text" name="column[${columnCount}][separator]" placeholder="||" />
           <p class="help">A separator used to delineate multiple values per cell. Default is <code>null</code>.</p>

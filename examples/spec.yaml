@@ -41,6 +41,7 @@ types:
 #   - column: ...                   # [ required ] name of the column
 #     predicate: ...                # [ required ] predicate to use in RDF
 #     datatype: xsd:string          #              datatype of the column data
+#     datestr: null                 #              a python date format string specifying the structure of the date(time) values in the column, if ommitted then date(time)s will be assumed to be in ISO format
 #     separator: null               #              a separator used to delineate multiple values per cell
 #     regex: false                  #              set true to allow regex patterns in the separator string.
 #     as_iri: false                 #              if the value should be treated as an iri set this to True
@@ -62,6 +63,11 @@ columns:
   - column: date published
     predicate: schema:datePublished
     datatype: xsd:date
+
+  - column: date_created
+    predicate: schema:dateCreated
+    datatype: xsd:dateTime
+    datestr: "%d/%m/%Y %H:%M"
 
   - column: keywords
     predicate: schema:keywords
