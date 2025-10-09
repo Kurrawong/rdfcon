@@ -77,6 +77,10 @@ to produce the following RDF
 > You can limit the number of rows to process with the `--limit` flag.
 > very handy during testing.
 
+> [!WARNING]  
+> rdfcon currently only works with `CSV` files as input. This may be extended in a
+> future release to allow other tabular formats.
+
 ### Conversion document creation
 
 rdfcon conversion documents are just `YAML` files, so they can be created with any text
@@ -147,6 +151,27 @@ methods.
 > but in combination rdfcon should be able to handle most conversion scenarios.
 
 ### Scenarios
+
+#### Handling different date formats
+
+You can tell rdfcon about the format of your dates using a python date string like so:
+
+```yml
+
+...
+columns:
+  - column: someDate
+    predicate: ex:date
+    datatype: xsd:date
+    datestr: "%d/%m/%Y"
+```
+
+This tells rdfcon that for the _someDate_ column, the values are dates like
+`dd/mm/yyyy`. The date format string uses the standard [python date string
+format](https://docs.python.org/3/library/datetime.html#format-codes).
+
+If the `datestr` is provided then rdfcon will attempt to parse the values for that column
+with the given format string and then convert them to ISO format datetime strings.
 
 #### Handling cells that have multiple values in them
 
