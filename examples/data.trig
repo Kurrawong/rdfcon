@@ -50,9 +50,9 @@ ex:graph {
 
     agent:1 schema:name "jovi, bon"^^xsd:string .
 
-    agent:2 schema:name "joel mangione"^^xsd:string .
+    agent:2 schema:name "joel mangione'"^^xsd:string .
 
-    agent:3 schema:name "dwayne the rock johnson"^^xsd:string .
+    agent:3 schema:name "dwayne \"the rock\" johnson"^^xsd:string .
 
     agent:4 schema:name "cleary, n"^^xsd:string .
 

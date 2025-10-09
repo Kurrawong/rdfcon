@@ -1,11 +1,12 @@
 [project]
 name = "rdfcon"
-version = "1.5.0"
+version = "1.5.1"
 description = "tabular data to RDF Conversion tool"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "cerberus>=1.3.7",
+    "jinja2>=3.1.6",
     "pyyaml>=6.0.3",
     "rdflib>=7.2.1",
     "tqdm>=4.67.1",
