@@ -61,6 +61,8 @@ jobs:
           version: 10
           run_install: true
       - run: |
+          pnpm semantic-release --dry-run --no-ci --branches "main,refs/*"
+          exit 1
           next_version="$(pnpm semantic-release --dry-run | grep "The next release version is" | awk '{print $NF}')"
           echo "::info:: next version is '$next_version'"
           if [ -z "$next_version" ]; then
@@ -79,3 +81,5 @@ jobs:
             echo "::error::Next version is '$next_version' uv.lock version is '$pyproj_version'"
             exit 1
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
