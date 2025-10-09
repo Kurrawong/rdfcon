@@ -47,3 +47,29 @@ jobs:
       - run: uv run black tests
       - run: uv run isort tests
       - run: uv run ruff check tests
+
+  check_version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: true
+      - run: |
+          uv sync
+          pyproj_version="$(grep -E '^version = "[0-9]+\.[0-9]+\.[0-9]"$' pyproject.toml | awk -F '"' '{print $2}')"
+          uv_lock_version="$(uv pip list | awk '/rdfcon/ {print $2}')"
+          next_version="$(pnpm semantic-release --dry-run | grep "The next release version is" | awk '{print $NF}')"
+          if [ "$pyproj_version" != "$next_version" ]; then
+            echo "::error::pyproject.toml version does not match the expected version for the next release"
+            exit 1
+          fi
+          if [ "$uv_lock_version" != "$next_version" ]; then
+            echo "::error::The rdfcon version in uv.lock does not match the expected version for the next release run uv sync to fix."
+            exit 1
+          fi
