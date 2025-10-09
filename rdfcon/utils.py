@@ -3,7 +3,9 @@
 general utility functions to be used in other modules
 """
 
+import csv
 import logging
+import time
 from pathlib import Path
 
 import cerberus
@@ -12,6 +14,16 @@ from rdflib import URIRef
 
 from rdfcon.namespace import NSM
 from rdfcon.schemas import md_schema
+
+
+def count_rows(infile: Path) -> int:
+    start = time.time()
+    with open(infile, "r") as f:
+        total = sum(1 for _ in csv.reader(f))
+    end = time.time()
+    duration = end - start
+    logging.debug(f"counting rows took {duration:.2f} seconds")
+    return total
 
 
 def parse_config_from_yaml(spec: Path) -> dict:
