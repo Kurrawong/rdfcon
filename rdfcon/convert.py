@@ -180,7 +180,7 @@ def templated_expressions(
         )
         if col == spec["identifier"]:
             value = iri.n3()
-            vars += f"{col}='{value}',"
+            vars += f"{col}=r'{value}',"
         elif valid_colname:
             value = (
                 row[headers.index(col)]
@@ -188,7 +188,7 @@ def templated_expressions(
                 .replace("'", "")
                 .replace("\n", " ")
             )
-            vars += f"{col}='{value}',"
+            vars += f"{col}=r'{value}',"
     try:
         formatted = eval(f"spec['template'].format({vars}).strip()")
 
