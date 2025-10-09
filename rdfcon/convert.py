@@ -8,6 +8,7 @@ import logging
 import re
 import string
 import uuid
+from datetime import datetime
 from pathlib import Path
 
 from rdflib import Dataset, Graph, Literal, Namespace, URIRef
@@ -22,6 +23,7 @@ def get_col_values(
     regex: bool,
     as_iri: bool,
     datatype: URIRef,
+    datestr: str | None,
     ns: URIRef | None,
     as_uuid: bool,
     ignore_case: bool,
@@ -71,8 +73,16 @@ def get_col_values(
                 g.add((iri, RDF.type, URIRef(ttype)))
 
         else:
+            formatted_str = stripped
+            if datestr:
+                try:
+                    dt = datetime.strptime(stripped, datestr)
+                    formatted_str = dt.isoformat()
+                except Exception:
+                    logging.error(f"Could not parse {stripped} with datestr: {datestr}")
+                    continue
             try:
-                col_values.append(Literal(stripped, datatype=datatype))
+                col_values.append(Literal(formatted_str, datatype=datatype))
             except ValueError as e:
                 logging.error(f"Could not parse {value} as datatype {datatype}: {e}")
 
@@ -131,6 +141,7 @@ def row_to_graph(headers: list[str], spec: dict, iri: URIRef, row: list) -> Grap
             separator=coldef["separator"],
             regex=coldef["regex"],
             datatype=coldef["datatype"],
+            datestr=coldef["datestr"],
             as_iri=coldef["as_iri"],
             ns=coldef["namespace"],
             as_uuid=coldef["as_uuid"],

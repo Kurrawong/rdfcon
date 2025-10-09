@@ -10,6 +10,7 @@ ex:graph {
             schema:CreativeWork ;
         schema:author agent:1 ;
         schema:comment "converted from csv using rdfcon"^^xsd:string ;
+        schema:dateCreated "2008-10-01T09:00:00"^^xsd:dateTime ;
         schema:datePublished "2025-03-17"^^xsd:date ;
         schema:genre genre:4bc092dd-f26d-3dc2-9f8b-659cd753c014 ;
         schema:headline "Publication 1"^^xsd:string ;
@@ -19,6 +20,7 @@ ex:graph {
             schema:CreativeWork ;
         schema:author agent:2 ;
         schema:comment "converted from csv using rdfcon"^^xsd:string ;
+        schema:dateCreated "2020-09-30T10:00:00"^^xsd:dateTime ;
         schema:datePublished "2024-07-01"^^xsd:date ;
         schema:genre genre:4bc092dd-f26d-3dc2-9f8b-659cd753c014 ;
         schema:headline "Publication 2"^^xsd:string ;
@@ -29,6 +31,7 @@ ex:graph {
             schema:CreativeWork ;
         schema:author agent:3 ;
         schema:comment "converted from csv using rdfcon"^^xsd:string ;
+        schema:dateCreated "2024-01-02T00:00:00"^^xsd:dateTime ;
         schema:datePublished "2024-07-03"^^xsd:date ;
         schema:genre genre:a4969d28-ad62-3940-9f3c-2cdec34989dd ;
         schema:headline "Publication 3"^^xsd:string ;
@@ -40,6 +43,7 @@ ex:graph {
             "stewie g"^^xsd:string ;
         schema:author agent:4 ;
         schema:comment "converted from csv using rdfcon"^^xsd:string ;
+        schema:dateCreated "2004-07-12T13:00:00"^^xsd:dateTime ;
         schema:datePublished "2025-10-01"^^xsd:date ;
         schema:genre genre:0f12ee10-f259-3df6-a44a-1ef4febe58fa ;
         schema:headline "Publication 4"^^xsd:string .
