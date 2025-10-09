@@ -479,7 +479,11 @@
 
           formData.forEach((value, key) => {
             if (key === "types") {
-              data[key] = value.split(",").map((item) => item.trim());
+              const types = value.split(",").map((item) => item.trim());
+              const filtered = types.filter((item) => item !== "");
+              if (filtered.length > 0) {
+                data[key] = filtered;
+              }
             } else if (key === "infile") {
               data[key] = value.name;
             } else if (key === "identifier") {
