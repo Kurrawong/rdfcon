@@ -96,28 +96,15 @@ columns:
 #
 # The template can
 #    - contain placeholders like {id} or {author}, where each placeholder
-#      is the name of a column in the source data. (see notes below, for
-#      funky column names)
+#      is the name of a column in the source data.
+#    - use prefixes declared in the prefixes: section
 #
 # Notes:
-# - The template can use the prefixes declared in the prefixes: section of this document.
-# - The template will be evaluated once for each row of the dataset.
-# - A placeholder must be the name of a column, and it will be substituted
-#   with the value of the current row for that column.
 # - If the placeholder is the {identifier} column then it will be substituted with the
-#   computed IRI for that column instead of just the string. Other columns may
-#   be made as IRIs manually in the template. i.e.
+#   namespaced IRI for that column instead of just the string. Other columns may
+#   be made as IRIs manually in the template. by doing something like:
+# 
 #        {iri} schema:author <https://example.org/agent/{author}> .
-#
-# Limitations:
-# - It is not possible to split multiple values out of a cell, like you can with the
-#   column maps.
-# - Column names with punctuation characters or whitespace (i.e. ' /-%$#' etc.) cannot be processed.
-#   for the most reliable experience try to ensure that column names do not
-#   contain punctuation characters or whitespace. underscores are accepted.
-# - all single/double quote chars and newlines will be removed from the column values
-#   to avoid breaking the RDF.
-#
 #
 template: |
   {id} schema:comment "converted from csv using rdfcon"^^xsd:string .

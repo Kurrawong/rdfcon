@@ -6,19 +6,24 @@ This module uses a conversion schema to process csv data into RDF.
 import csv
 import logging
 import re
-import string
-import uuid
 from datetime import datetime
 from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
 
+import jinja2
 from rdflib import Dataset, Graph, Literal, Namespace, URIRef
 from rdflib.namespace import RDF
 from tqdm import tqdm
 
 from rdfcon.namespace import NSM
-from rdfcon.utils import count_rows
+from rdfcon.utils import (
+    compile_regex,
+    count_rows,
+    generate_prefix_frontmatter,
+    get_uuid,
+    replace_curly_terms,
+)
 
 
 def get_col_values(
@@ -40,7 +45,7 @@ def get_col_values(
         return col_values, g
     if separator:
         if regex:
-            values = re.split(separator, col)
+            values = compile_regex(separator).split(col)
         else:
             values = col.split(separator)
     else:
@@ -62,7 +67,7 @@ def get_col_values(
                 if ignore_case:
                     iri_str = iri_str.lower()
                 if as_uuid:
-                    iri_str = str(uuid.uuid3(uuid.NAMESPACE_DNS, iri_str))
+                    iri_str = get_uuid(iri_str)
                 try:
                     iri = URIRef(ns + iri_str)
                     iri.n3()
@@ -102,7 +107,7 @@ def warn_about_unused_columns(headers: list[str], spec: dict, filename: str) -> 
     unmapped_columns = [column for column in headers if column not in mapped_columns]
     if unmapped_columns:
         logging.warning(
-            f"WARNING: {filename} contains {len(unmapped_columns)} unmapped columns: {unmapped_columns}"
+            f"{filename} contains {len(unmapped_columns)} unmapped columns: {unmapped_columns}"
         )
     return
 
@@ -161,60 +166,27 @@ def row_to_graph(headers: list[str], spec: dict, iri: URIRef, row: list) -> Grap
 
 
 def templated_expressions(
-    headers: list[str], row: list, iri: URIRef, spec: dict
+    headers: list[str], row: list, iri: URIRef, spec: dict, idcol: int
 ) -> Graph:
-
-    def as_uuid(value: str) -> str:
-        new_uuid = str(uuid.uuid3(uuid.NAMESPACE_DNS, value))
-        return new_uuid
 
     g = Graph()
     if not spec["template"]:
         return g
 
-    # generate prefix front matter for template
-    prefixes = ""
-    for ns, uri in NSM.namespaces():
-        prefixes += f"@prefix {ns}: <{uri}> .\n"
-
-    vars = ""
-    for col in headers:
-        valid_colname = (
-            set(col).intersection(set(string.punctuation + " ") - set("_")) == set()
-        )
-        if col == spec["identifier"]:
-            value = iri.n3()
-            vars += f"{col}=r'{value}',"
-        elif valid_colname:
-            value = (
-                row[headers.index(col)]
-                .replace('"', "")
-                .replace("'", "")
-                .replace("\n", " ")
-            )
-            if value.endswith("\\"):
-                truncated = value if len(value) < 25 else f"...{value[-23:]}"
-                logging.debug(
-                    f"trailing backslash will be removed from column '{col}' with value: {truncated}"
-                )
-                value = value.rstrip("\\")
-            vars += f"{col}=r'{value}',"
-    try:
-        formatted = eval(f"spec['template'].format({vars}).strip()")
-
-    except Exception as e:
-        raise Exception(
-            f"Could not format templated expression {spec['template']}: {e}\n"
-            f"vars string {vars}"
-        )
-    template = prefixes + formatted
+    # esacpe double quotes in strings
+    row = [cell.replace('"', r"\"") for cell in row]
+    # ensure the {identifier} column is replaced with its namespaced IRI
+    row[idcol] = iri.n3()
+    prefixes = generate_prefix_frontmatter()
+    template_str = prefixes + replace_curly_terms(spec["template"])
+    template = jinja2.Template(template_str)
+    rendered = template.render(row=row, headers=headers)
     # remove datatypes from empty string literals to avoid parser warnings
-    template = re.sub(r'""\^\^[\w:]+', '""', template)
-
+    rendered = re.sub(r'""\^\^[\w:]+', '""', rendered)
     try:
-        g += Graph().parse(data=template, format="turtle")
+        g += Graph().parse(data=rendered, format="turtle")
     except Exception as e:
-        raise Exception(f"Could not parse templated expression {formatted}: {e}")
+        raise Exception(f"Could not parse templated expression {template_str}: {e}")
 
     # remove empty literals from the graph
     empty_literals = g.query(
@@ -224,15 +196,12 @@ def templated_expressions(
         g.remove((s, p, o))
 
     # recursively remove empty blank nodes from the graph
-    empty_bnodes = g.query(
-        "select ?o where { ?s ?p ?o . filter(isblank(?o)) . filter not exists { ?o ?x ?y } }"
-    )
+    empty_bnode_query = "select ?o where { ?s ?p ?o . filter(isblank(?o)) . filter not exists { ?o ?x ?y } }"
+    empty_bnodes = g.query(empty_bnode_query)
     while empty_bnodes:
         for o in empty_bnodes:
             g.remove((None, None, o))
-            empty_bnodes = g.query(
-                "select ?o where { ?s ?p ?o . filter(isblank(?o)) . filter not exists { ?o ?x ?y } }"
-            )
+            empty_bnodes = g.query(empty_bnode_query)
     return g
 
 
@@ -242,8 +211,10 @@ def process_row(
     g = Graph()
     iri = get_iri_for_row(row, idcol, ns)
     if iri:
-        g += row_to_graph(headers, spec, iri, row)
-        g += templated_expressions(headers, row, iri, spec)
+        g += row_to_graph(headers=headers, spec=spec, iri=iri, row=row)
+        g += templated_expressions(
+            headers=headers, spec=spec, iri=iri, row=row, idcol=idcol
+        )
     return g
 
 

@@ -4,8 +4,11 @@ general utility functions to be used in other modules
 """
 
 import csv
+import functools
 import logging
+import re
 import time
+import uuid
 from pathlib import Path
 
 import cerberus
@@ -16,16 +19,44 @@ from rdfcon.namespace import NSM
 from rdfcon.schemas import md_schema
 
 
+def timer(func):
+    @functools.wraps(func)
+    def wrapped(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        logging.debug(f"{func.__name__} took {end - start:.4f} seconds")
+        return result
+
+    return wrapped
+
+
+@functools.lru_cache(maxsize=128)
+def generate_prefix_frontmatter() -> str:
+    prefixes = ""
+    for ns, uri in NSM.namespaces():
+        prefixes += f"@prefix {ns}: <{uri}> .\n"
+    return prefixes
+
+
+@functools.lru_cache(maxsize=128)
+def get_uuid(value: str) -> str:
+    new_uuid = str(uuid.uuid3(uuid.NAMESPACE_DNS, value))
+    return new_uuid
+
+
+@functools.lru_cache(maxsize=128)
+def compile_regex(pattern: str) -> re.Pattern:
+    return re.compile(pattern=pattern)
+
+
+@timer
 def count_rows(infile: Path) -> int:
-    start = time.time()
     with open(infile, "r") as f:
-        total = sum(1 for _ in csv.reader(f))
-    end = time.time()
-    duration = end - start
-    logging.debug(f"counting rows took {duration:.2f} seconds")
-    return total
+        return sum(1 for _ in csv.reader(f))
 
 
+@timer
 def parse_config_from_yaml(spec: Path) -> dict:
     with open(spec, "r") as file:
         try:
@@ -69,3 +100,15 @@ def parse_config_from_yaml(spec: Path) -> dict:
 
     resolve_uris(parsed_spec)
     return parsed_spec
+
+
+@functools.lru_cache(maxsize=128)
+def replace_curly_terms(text) -> str:
+    # Find and replace {something} with {row[headers.index('something')]}
+    def repl(match):
+        inner = match.group(1)
+        return f"{{{{row[headers.index('{inner}')]}}}}"
+
+    # Match text inside single curly braces, not including nested ones
+    pattern = r"\{([^{}]+?)\}"
+    return re.sub(pattern, repl, text)
