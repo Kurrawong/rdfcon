@@ -188,6 +188,12 @@ def templated_expressions(
                 .replace("'", "")
                 .replace("\n", " ")
             )
+            if value.endswith("\\"):
+                truncated = value if len(value) < 25 else f"...{value[-23:]}"
+                logging.warn(
+                    f"trailing backslash will be removed from column '{col}' with value: {truncated}"
+                )
+                value = value.rstrip("\\")
             vars += f"{col}=r'{value}',"
     try:
         formatted = eval(f"spec['template'].format({vars}).strip()")
