@@ -235,7 +235,7 @@ columns:
     as_uuid: true
     namespace: <https://example.org/agent/>
     type: sdo:Person
-    label: schema:name
+    label: sdo:name
 ```
 
 which will give the following RDF
