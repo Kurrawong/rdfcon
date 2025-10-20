@@ -176,7 +176,7 @@ def templated_expressions(
     # escape double quotes in strings
     row = [cell.replace('"', r"\"") for cell in row]
     # escape new lines
-    row = [cell.replace('\n', r"\n") for cell in row]
+    row = [cell.replace("\n", r"\n") for cell in row]
     # ensure the {identifier} column is replaced with its namespaced IRI
     row[idcol] = iri.n3()
     prefixes = generate_prefix_frontmatter()
