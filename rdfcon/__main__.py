@@ -75,7 +75,7 @@ def main():
         parser.error("illegal flag combination, only one of spec or --ui can be given")
 
     if args.ui:
-        webbrowser.open(str(Path(__file__).parent / "ui" / "index.html"))
+        webbrowser.open(f"file:///{Path(__file__).parent / 'ui' / 'index.html'}")
         exit()
     spec_path = Path(args.spec)
     spec = get_spec(path=spec_path)
