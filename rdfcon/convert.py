@@ -99,7 +99,9 @@ def get_col_values(
 
 
 def warn_about_unused_columns(headers: list[str], spec: dict, filename: str) -> None:
-    mapped_columns = [spec["identifier"]]
+    mapped_columns = []
+    if spec["identifier"]:
+        mapped_columns.append(spec["identifier"])
     if spec["columns"]:
         mapped_columns.extend([str(column["column"]) for column in spec["columns"]])
     if spec["template"]:
@@ -112,7 +114,9 @@ def warn_about_unused_columns(headers: list[str], spec: dict, filename: str) -> 
     return
 
 
-def get_id_column(headers: list[str], spec: dict) -> int:
+def get_id_column(headers: list[str], spec: dict) -> int | None:
+    if spec.get("identifier") is None:
+        return None
     try:
         idcol = headers.index(spec["identifier"])
     except ValueError as e:
@@ -121,7 +125,7 @@ def get_id_column(headers: list[str], spec: dict) -> int:
 
 
 def get_iri_for_row(row: list, idcol: int, ns: URIRef) -> URIRef | None:
-    if row[idcol] == "":
+    if idcol is None or row[idcol] == "":
         return None
     if ns:
         iri = ns[str(row[idcol])]
@@ -210,8 +214,9 @@ def process_row(
 ) -> Graph:
     g = Graph()
     iri = get_iri_for_row(row, idcol, ns)
-    if iri:
+    if spec["columns"]:
         g += row_to_graph(headers=headers, spec=spec, iri=iri, row=row)
+    if spec["template"]:
         g += templated_expressions(
             headers=headers, spec=spec, iri=iri, row=row, idcol=idcol
         )

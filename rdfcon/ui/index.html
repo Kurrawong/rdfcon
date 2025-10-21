@@ -215,14 +215,12 @@
                 type="text"
                 id="identifier"
                 name="identifier"
-                required
                 placeholder="id"
                 list="csvHeaders"
               />
             </div>
             <p class="help">
-              <span class="required">[required]</span> Name of the column with
-              unique identifiers for each row.
+              Name of the column with unique identifiers for each row.
             </p>
             <p>
               <span class="hint"
@@ -307,7 +305,7 @@
                 id="template"
                 name="template"
                 rows="5"
-                placeholder='{id} schema:comment "converted from csv using rdfcon"^^xsd:string .'
+                placeholder='<https://example.org/pid/{id}> schema:comment "converted from csv using rdfcon"^^xsd:string .'
               ></textarea>
             </div>
           </div>
