@@ -101,7 +101,9 @@ def parse_config_from_yaml(spec: Path) -> dict:
 
     resolve_uris(parsed_spec)
     if parsed_spec["columns"]:
-        assert parsed_spec["identifier"], "If column specs are given, you must specify the id column as the identifier"
+        assert parsed_spec[
+            "identifier"
+        ], "If column specs are given, you must specify the id column as the identifier"
     return parsed_spec
 
 
