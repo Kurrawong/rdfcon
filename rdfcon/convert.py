@@ -177,8 +177,6 @@ def templated_expressions(
     row = [cell.replace('"', r"\"") for cell in row]
     # escape new lines
     row = [cell.replace("\n", r"\n") for cell in row]
-    # ensure the {identifier} column is replaced with its namespaced IRI
-    row[idcol] = iri.n3()
     prefixes = generate_prefix_frontmatter()
     template_str = prefixes + replace_curly_terms(spec["template"])
     template = jinja2.Template(template_str)

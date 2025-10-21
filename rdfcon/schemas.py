@@ -28,7 +28,7 @@ md_schema = {
     },
     "columns": {
         "type": "list",
-        "default": None,
+        "default": [],
         "schema": {
             "type": "dict",
             "schema": {

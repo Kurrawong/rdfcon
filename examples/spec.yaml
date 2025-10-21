@@ -99,13 +99,6 @@ columns:
 #      is the name of a column in the source data.
 #    - use prefixes declared in the prefixes: section
 #
-# Notes:
-# - If the placeholder is the {identifier} column then it will be substituted with the
-#   namespaced IRI for that column instead of just the string. Other columns may
-#   be made as IRIs manually in the template. by doing something like:
-# 
-#        {iri} schema:author <https://example.org/agent/{author}> .
-#
 template: |
-  {id} schema:comment "converted from csv using rdfcon"^^xsd:string .
+  <https://example.org/pid/{id}> schema:comment "converted from csv using rdfcon"^^xsd:string .
   <https://example.org/agent/{author}> schema:name "{author_name}"^^xsd:string .
