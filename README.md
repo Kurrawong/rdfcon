@@ -133,10 +133,8 @@ rdfcon provides two ways to convert data to RDF.
    ```yml
 
    ...
-   identifer: id
-   namespace: <https://example.org/pid/>
    template: |-
-     {id} a sdo:Thing ;
+     <https://example.org/pid/{id}> a sdo:Thing ;
          rdfs:label "{name}" ;
          rdfs:comment "{description}" ;
          sdo:identifier "{warehouseId}"^^xsd:token .

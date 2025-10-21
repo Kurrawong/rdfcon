@@ -19,10 +19,21 @@ md_schema = {
     "infile": {"type": "string", "required": True},
     "outdir": {"type": "string", "required": False},
     "graph": {"type": "string", "required": False},
-    "namespace": {"type": "string", "default": None, "nullable": True},
-    "identifier": {"type": "string", "required": True},
+    "namespace": {
+        "type": "string",
+        "default": None,
+        "required": False,
+        "nullable": True,
+    },
+    "identifier": {
+        "type": "string",
+        "default": None,
+        "required": False,
+        "nullable": True,
+    },
     "types": {
         "type": "list",
+        "default": [],
         "schema": {"type": "string"},
         "required": False,
     },

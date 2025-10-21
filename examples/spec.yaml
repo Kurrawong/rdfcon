@@ -1,4 +1,4 @@
-# specify RDF prefixes used in this document
+# Optionally specify RDF prefixes used in this document
 prefixes:
   - ex: <https://example.org/>
   - pid: <https://example.org/pid/>
@@ -20,13 +20,11 @@ outdir: ./
 # If given the output format will be .trig otherwise .ttl
 graph: ex:graph
 
-# [ required ]
-# Name of column with the unique identifiers for each row
+# Name of column with the unique identifiers for each row.
+# Required if columns: are given
 identifier: id
 
-# A namespace to use when minting IRIs for the {identifier}.
-# if not given then {identifier} will be assumed to already
-# be a valid IRI.
+# Optional namespace to use when minting IRIs for the {identifier}.
 namespace: <https://example.org/pid/>
 
 # classes to assign to each resource, can have as many as you want.
@@ -99,6 +97,6 @@ columns:
 #      is the name of a column in the source data.
 #    - use prefixes declared in the prefixes: section
 #
-template: |
+template: |-
   <https://example.org/pid/{id}> schema:comment "converted from csv using rdfcon"^^xsd:string .
   <https://example.org/agent/{author}> schema:name "{author_name}"^^xsd:string .
