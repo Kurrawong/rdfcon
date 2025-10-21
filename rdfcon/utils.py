@@ -76,7 +76,7 @@ def parse_config_from_yaml(spec: Path) -> dict:
         if isinstance(item, dict):
             for k, v in item.items():
                 if not k == "template":
-                  item[k] = resolve_uris(v)
+                    item[k] = resolve_uris(v)
             return item
         elif isinstance(item, list):
             for i in range(len(item)):
