@@ -10,6 +10,7 @@ import re
 import time
 import uuid
 from pathlib import Path
+from typing import Iterator
 
 import cerberus
 import yaml
@@ -117,3 +118,11 @@ def replace_curly_terms(text) -> str:
     # Match text inside single curly braces, not including nested ones
     pattern = r"\{([^{}]+?)\}"
     return re.sub(pattern, repl, text)
+
+
+def counter(start: int, stop: int, step: int = 1) -> Iterator[int]:
+    i = start
+    while i <= stop:
+        yield i
+        i += step
+    return StopIteration

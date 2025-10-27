@@ -20,6 +20,7 @@ from rdfcon.namespace import NSM
 from rdfcon.utils import (
     compile_regex,
     count_rows,
+    counter,
     generate_prefix_frontmatter,
     get_uuid,
     replace_curly_terms,
@@ -210,7 +211,11 @@ def templated_expressions(
 
 
 def process_row(
-    row: list, idcol: int, headers: list, ns: Namespace, spec: dict
+    row: list,
+    idcol: int,
+    headers: list,
+    ns: Namespace,
+    spec: dict,
 ) -> Graph:
     g = Graph()
     iri = get_iri_for_row(row, idcol, ns)
@@ -236,16 +241,27 @@ def convert(infile: Path, spec: dict, outdir: Path, limit: int) -> None:
     ns = Namespace(spec["namespace"]) if spec["namespace"] else None
     [g.bind(ns, uri) for ns, uri in NSM.namespaces()]
     total = count_rows(infile=infile) - 1
+    if limit <= 0:
+        limit = total
+    row_counter = counter(start=1, stop=total, step=1)
     with open(infile, "r") as file:
         reader = csv.reader(file)
         headers = next(reader)
         warn_about_unused_columns(headers=headers, spec=spec, filename=infile.name)
         idcol = get_id_column(headers, spec)
-        worker = partial(process_row, idcol=idcol, headers=headers, ns=ns, spec=spec)
+        worker = partial(
+            process_row,
+            idcol=idcol,
+            headers=headers,
+            ns=ns,
+            spec=spec,
+        )
         with Pool() as pool:
             results = tqdm(pool.imap_unordered(worker, reader), total=total)
             for result in results:
                 g += result
+                if next(row_counter) >= limit:
+                    break
     g.serialize(destination=outfile, format=format)
     logging.info(
         f"{len(g)} {'quads' if graph_name else 'triples'} written to {outfile}"
