@@ -1,6 +1,6 @@
 [project]
 name = "rdfcon"
-version = "1.5.7"
+version = "1.5.8"
 description = "tabular data to RDF Conversion tool"
 readme = "README.md"
 requires-python = ">=3.12"

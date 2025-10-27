@@ -257,7 +257,7 @@ def convert(infile: Path, spec: dict, outdir: Path, limit: int) -> None:
             spec=spec,
         )
         with Pool() as pool:
-            results = tqdm(pool.imap_unordered(worker, reader), total=total)
+            results = tqdm(pool.imap_unordered(worker, reader), total=limit)
             for result in results:
                 g += result
                 if next(row_counter) >= limit:
