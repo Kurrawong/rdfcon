@@ -243,7 +243,7 @@ def convert(infile: Path, spec: dict, outdir: Path, limit: int) -> None:
     total = count_rows(infile=infile) - 1
     if limit <= 0:
         limit = total
-    row_counter = counter(start=1, stop=total, step=1)
+    row_counter = counter(start=1, stop=limit, step=1)
     with open(infile, "r") as file:
         reader = csv.reader(file)
         headers = next(reader)
@@ -257,7 +257,7 @@ def convert(infile: Path, spec: dict, outdir: Path, limit: int) -> None:
             spec=spec,
         )
         with Pool() as pool:
-            results = tqdm(pool.imap_unordered(worker, reader), total=limit)
+            results = tqdm(pool.imap_unordered(worker, reader), total=limit, initial=1)
             for result in results:
                 g += result
                 if next(row_counter) >= limit:
