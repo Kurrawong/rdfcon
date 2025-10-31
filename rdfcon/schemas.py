@@ -71,5 +71,11 @@ md_schema = {
         },
         "required": False,
     },
+    "functions": {
+        "type": "string",
+        "default": None,
+        "nullable": True,
+        "regex": r".*\.py$",
+    },
     "template": {"type": "string", "default": None, "nullable": True},
 }

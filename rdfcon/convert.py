@@ -16,6 +16,7 @@ from rdflib import Dataset, Graph, Literal, Namespace, URIRef
 from rdflib.namespace import RDF
 from tqdm import tqdm
 
+from rdfcon.custom_functions import load_custom_functions
 from rdfcon.namespace import NSM
 from rdfcon.utils import (
     compile_regex,
@@ -184,8 +185,13 @@ def templated_expressions(
     row = [cell.replace("\n", r"\n") for cell in row]
     prefixes = generate_prefix_frontmatter()
     template_str = prefixes + replace_curly_terms(spec["template"])
+    print(template_str)
     template = jinja2.Template(template_str)
+    if spec.get("functions"):
+        custom_functions = load_custom_functions(spec["functions"])
+    template.globals.update(custom_functions)
     rendered = template.render(row=row, headers=headers)
+    print(rendered)
     # remove datatypes from empty string literals to avoid parser warnings
     rendered = re.sub(r'""\^\^[\w:]+', '""', rendered)
     try:
