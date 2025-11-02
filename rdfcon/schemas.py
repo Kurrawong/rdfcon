@@ -71,7 +71,7 @@ md_schema = {
         },
         "required": False,
     },
-    "functions": {
+    "templateFunctions": {
         "type": "string",
         "default": None,
         "nullable": True,

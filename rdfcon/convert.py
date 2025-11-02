@@ -185,13 +185,12 @@ def templated_expressions(
     row = [cell.replace("\n", r"\n") for cell in row]
     prefixes = generate_prefix_frontmatter()
     template_str = prefixes + replace_curly_terms(spec["template"])
-    print(template_str)
     template = jinja2.Template(template_str)
-    if spec.get("functions"):
-        custom_functions = load_custom_functions(spec["functions"])
+    if spec.get("templateFunctions"):
+        custom_functions = load_custom_functions(spec["templateFunctions"])
+    template.globals.update(__builtins__)
     template.globals.update(custom_functions)
     rendered = template.render(row=row, headers=headers)
-    print(rendered)
     # remove datatypes from empty string literals to avoid parser warnings
     rendered = re.sub(r'""\^\^[\w:]+', '""', rendered)
     try:

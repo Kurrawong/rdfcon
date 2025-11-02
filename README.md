@@ -148,6 +148,46 @@ methods.
 > Both methods can and should be used in tandom. There are limitations to each method
 > but in combination rdfcon should be able to handle most conversion scenarios.
 
+### Custom functions
+
+Often you just can't avoid the need for some custom logic During a conversion.
+For this reason RDFCon allows you to define your own custom functions for use in
+the template string. The custom functions must be written in Python, in a seperate python
+file, and can be passed to the template via the `templateFunctions` parameter
+in the conversion spec.
+
+For example:
+
+```python
+# my_custom_functions.py
+
+from datetime import datetime
+import subprocess
+
+def get_current_date() -> str:
+    return datetime.today().isoformat()
+
+def get_short_commit_hash() -> str:
+    cmd = "git rev-parse --short HEAD".split()
+    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    short_hash = result.stdout.strip()
+    return short_hash
+```
+
+```yaml
+# myConversionSpec.yaml
+
+...
+templateFunctions: my_custom_functions.py
+template: |
+    <https://example.org/pid/{id}> a sdo:Thing ;
+      sdo:comment "converted on {{ get_current_date() }} with commit {{ get_short_commit_hash() }}" ;
+    .
+```
+
+For a complete example see [custom_functions.yaml](./examples/custom_functions.yaml).
+
+
 ### Scenarios
 
 #### Handling different date formats

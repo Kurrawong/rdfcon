@@ -100,7 +100,3 @@ columns:
 template: |-
   <https://example.org/pid/{id}> schema:comment "converted from csv using rdfcon"^^xsd:string .
   <https://example.org/agent/{author}> schema:name "{author_name}"^^xsd:string .
-  <a> <b> "{{ uuid() }}" .
-  <a> <b> "{{ row[1] }}" .
-
-functions: template_functions.py
