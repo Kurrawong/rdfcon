@@ -260,6 +260,30 @@
           </div>
 
           <div class="field">
+            <label class="label" for="templateFunctions"
+              >Template Functions:</label
+            >
+            <div class="control">
+              <input
+                class="input"
+                type="file"
+                accept=".py"
+                id="templateFunctions"
+                name="templateFunctions"
+                placeholder="custom_functions.py"
+              />
+            </div>
+            <p class="help">A python file containing custom functions.</p>
+            <p>
+              <span class="hint"
+                >The functions defined in this file will be made available for
+                use in the turtle template string via standard Jinja2 template
+                syntax. e.g.<br />
+                'ex:subj ex:pred "{{ my_func() }}" .'</span
+              >
+            </p>
+          </div>
+          <div class="field">
             <label class="label" for="template">Template:</label>
             <details class="container">
               <summary>Template Information</summary>
@@ -279,6 +303,7 @@
                   column in the source data.
                 </li>
                 <li>use prefixes declared in the prefixes section</li>
+                <li>use standard Jinja2 templating syntax</li>
               </ul>
               <p>Notes</p>
               <ul>
@@ -467,7 +492,7 @@
               if (filtered.length > 0) {
                 data[key] = filtered;
               }
-            } else if (key === "infile") {
+            } else if (["infile", "templateFunctions"].includes(key)) {
               data[key] = value.name;
             } else if (key === "identifier") {
               data[key] = value.replaceAll('"', "");
