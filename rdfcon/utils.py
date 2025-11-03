@@ -105,18 +105,29 @@ def parse_config_from_yaml(spec: Path) -> dict:
         assert parsed_spec[
             "identifier"
         ], "If column specs are given, you must specify the id column as the identifier"
+
+    # resolve path to custom template functions
+    if parsed_spec["templateFunctions"]:
+        functions = parsed_spec["templateFunctions"]
+        if not Path(functions).is_absolute():
+            path_to_funcs = spec.parent / functions
+        else:
+            path_to_funcs = Path(functions)
+
+        assert path_to_funcs.exists() and path_to_funcs.is_file()
+        parsed_spec["templateFunctions"] = path_to_funcs
     return parsed_spec
 
 
 @functools.lru_cache(maxsize=128)
 def replace_curly_terms(text) -> str:
-    # Find and replace {something} with {row[headers.index('something')]}
+    # Find and replace {something} with {{row[headers.index('something')]}} except for Jinja tags
     def repl(match):
         inner = match.group(1)
         return f"{{{{row[headers.index('{inner}')]}}}}"
 
-    # Match text inside single curly braces, not including nested ones
-    pattern = r"\{([^{}]+?)\}"
+    # Match single curly braces that are NOT for Jinja-like {% ... %} tags
+    pattern = r"(?<!\{)\{(?!%)([^{}]+?)(?<!%)\}(?!\})"
     return re.sub(pattern, repl, text)
 
 
