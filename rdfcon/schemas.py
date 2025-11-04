@@ -14,6 +14,8 @@ md_schema = {
             "keysrules": {"type": "string"},
             "valuesrules": {"type": "string", "regex": "^<http[s]?://.*>"},
         },
+        "nullable": True,
+        "default": None,
         "required": False,
     },
     "infile": {"type": "string", "required": True},

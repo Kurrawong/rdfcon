@@ -69,9 +69,10 @@ def parse_config_from_yaml(spec: Path) -> dict:
         raise cerberus.DocumentError(f"Could not validate {spec.name}: {v.errors}")
     parsed_spec = v.normalized(parsed_spec)
 
-    for prefix in parsed_spec["prefixes"]:
-        for ns, uri in prefix.items():
-            NSM.bind(ns, uri.strip("<>"))
+    if parsed_spec.get("prefixes"):
+        for prefix in parsed_spec["prefixes"]:
+            for ns, uri in prefix.items():
+                NSM.bind(ns, uri.strip("<>"))
 
     def resolve_uris(item):
         if isinstance(item, dict):

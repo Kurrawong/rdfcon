@@ -101,14 +101,16 @@ def get_col_values(
 
 
 def warn_about_unused_columns(headers: list[str], spec: dict, filename: str) -> None:
-    mapped_columns = []
+    mapped_columns = set()
     if spec["identifier"]:
-        mapped_columns.append(spec["identifier"])
+        mapped_columns.add(spec["identifier"])
     if spec["columns"]:
-        mapped_columns.extend([str(column["column"]) for column in spec["columns"]])
+        [mapped_columns.add(str(column["column"])) for column in spec["columns"]]
     if spec["template"]:
-        mapped_columns.extend(re.findall(r"\{(.*?)\}", spec["template"]))
-    unmapped_columns = [column for column in headers if column not in mapped_columns]
+        for col in headers:
+            if re.findall(rf"\{{.*{col}.*\}}", spec["template"]):
+                mapped_columns.add(col)
+    unmapped_columns = set(headers) - mapped_columns
     if unmapped_columns:
         logging.warning(
             f"{filename} contains {len(unmapped_columns)} unmapped columns: {unmapped_columns}"
@@ -172,7 +174,11 @@ def row_to_graph(headers: list[str], spec: dict, iri: URIRef, row: list) -> Grap
 
 
 def templated_expressions(
-    headers: list[str], row: list, iri: URIRef, spec: dict, idcol: int
+    headers: list[str],
+    row: list,
+    iri: URIRef,
+    spec: dict,
+    idcol: int,
 ) -> Graph:
 
     g = Graph()
@@ -186,17 +192,23 @@ def templated_expressions(
     prefixes = generate_prefix_frontmatter()
     template_str = prefixes + replace_curly_terms(spec["template"])
     template = jinja2.Template(template_str)
-    if spec.get("templateFunctions"):
-        custom_functions = load_custom_functions(spec["templateFunctions"])
-    template.globals.update(__builtins__)
+    # add custom functions and python builtins to the template context
+    custom_functions = load_custom_functions(spec.get("templateFunctions"))
     template.globals.update(custom_functions)
-    rendered = template.render(row=row, headers=headers)
+    template.globals.update(__builtins__)
+    logging.debug(template_str)
+    try:
+        rendered = template.render(row=row, headers=headers)
+    except Exception as e:
+        raise Exception(f"Could not render the template string\n{template_str}: {e}")
     # remove datatypes from empty string literals to avoid parser warnings
     rendered = re.sub(r'""\^\^[\w:]+', '""', rendered)
     try:
         g += Graph().parse(data=rendered, format="turtle")
     except Exception as e:
-        raise Exception(f"Could not parse templated expression {template_str}: {e}")
+        raise Exception(
+            f"Could not parse rendered template expression\n{rendered}: {e}"
+        )
 
     # remove empty literals from the graph
     empty_literals = g.query(
@@ -228,7 +240,11 @@ def process_row(
         g += row_to_graph(headers=headers, spec=spec, iri=iri, row=row)
     if spec["template"]:
         g += templated_expressions(
-            headers=headers, spec=spec, iri=iri, row=row, idcol=idcol
+            headers=headers,
+            spec=spec,
+            iri=iri,
+            row=row,
+            idcol=idcol,
         )
     return g
 
@@ -237,6 +253,7 @@ def convert(infile: Path, spec: dict, outdir: Path, limit: int) -> None:
     d = Dataset()
     graph_name = spec.get("graph")
     g = d.graph(graph_name)
+    g.namespace_manager = NSM
     if graph_name:
         outfile = (outdir / infile.with_suffix(".trig").name).resolve()
         format = "trig"
@@ -244,7 +261,6 @@ def convert(infile: Path, spec: dict, outdir: Path, limit: int) -> None:
         outfile = (outdir / infile.with_suffix(".ttl").name).resolve()
         format = "turtle"
     ns = Namespace(spec["namespace"]) if spec["namespace"] else None
-    [g.bind(ns, uri) for ns, uri in NSM.namespaces()]
     total = count_rows(infile=infile) - 1
     if limit <= 0:
         limit = total

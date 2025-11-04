@@ -1,6 +1,7 @@
 import ast
 import importlib.util
 import os
+from functools import lru_cache
 
 
 def _list_functions_in_file(filename: str):
@@ -16,10 +17,15 @@ def _load_module_from_file(module_name: str, filename: str):
     return module
 
 
-def load_custom_functions(filename: str) -> dict[str:object]:
-    module_name = os.path.splitext(os.path.basename(filename))[0]
-    function_names = _list_functions_in_file(filename)
-    module = _load_module_from_file(module_name, filename)
-    return {
-        name: getattr(module, name) for name in function_names if hasattr(module, name)
-    }
+@lru_cache(maxsize=128)
+def load_custom_functions(filename: str | None) -> dict[str:object]:
+    if filename:
+        module_name = os.path.splitext(os.path.basename(filename))[0]
+        function_names = _list_functions_in_file(filename)
+        module = _load_module_from_file(module_name, filename)
+        return {
+            name: getattr(module, name)
+            for name in function_names
+            if hasattr(module, name)
+        }
+    return {}
