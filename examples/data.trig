@@ -1,21 +1,11 @@
 @prefix agent: <https://example.org/agent/> .
 @prefix ex: <https://example.org/> .
 @prefix genre: <https://example.org/genre/> .
-@prefix ns1: <file:///home/laws/projects/kurrawong/rdfcon/> .
 @prefix pid: <https://example.org/pid/> .
 @prefix schema: <https://schema.org/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 ex:graph {
-    ns1:a ns1:b "3884964a-5c81-4d83-9719-0c260d1dc557",
-            "5a81baa6-b5d9-4d17-b5f3-6e0378e4bc44",
-            "70dddbba-e00e-4627-b609-f6812873a653",
-            "Publication 1",
-            "Publication 2",
-            "Publication 3",
-            "Publication 4",
-            "be75f371-6fca-406e-8e45-2c3bee683996" .
-
     pid:1 a ex:Resource,
             schema:CreativeWork ;
         schema:author agent:1 ;

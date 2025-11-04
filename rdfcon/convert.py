@@ -249,7 +249,7 @@ def process_row(
     return g
 
 
-def convert(infile: Path, spec: dict, outdir: Path, limit: int) -> None:
+def convert(infile: Path, spec: dict, outdir: Path, limit: int, processes: int) -> None:
     d = Dataset()
     graph_name = spec.get("graph")
     g = d.graph(graph_name)
@@ -277,7 +277,7 @@ def convert(infile: Path, spec: dict, outdir: Path, limit: int) -> None:
             ns=ns,
             spec=spec,
         )
-        with Pool() as pool:
+        with Pool(processes=processes) as pool:
             results = tqdm(pool.imap_unordered(worker, reader), total=limit, initial=1)
             for result in results:
                 g += result
