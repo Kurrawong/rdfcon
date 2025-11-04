@@ -7,6 +7,7 @@ called from the command line.
 import argparse
 import logging
 import logging.config
+import multiprocessing
 import webbrowser
 from importlib.metadata import version
 from pathlib import Path
@@ -52,6 +53,14 @@ def main():
         "-n", "--limit", help="Max number of rows to process", default=0, type=int
     )
     parser.add_argument(
+        "-p",
+        "--processes",
+        help="Maximum number of processes, defaults to number of CPU cores -1",
+        dest="processes",
+        default=multiprocessing.cpu_count() - 1,
+        type=int,
+    )
+    parser.add_argument(
         "--ui",
         action="store_true",
         help="Open a browser based ui for creating spec files",
@@ -74,6 +83,10 @@ def main():
     if all([args.spec, args.ui]):
         parser.error("illegal flag combination, only one of spec or --ui can be given")
 
+    assert (
+        0 < args.processes <= multiprocessing.cpu_count()
+    ), "--processes must be between 1 and the number of available cpu cores"
+
     if args.ui:
         webbrowser.open(f"file:///{Path(__file__).parent / 'ui' / 'index.html'}")
         exit()
@@ -86,7 +99,13 @@ def main():
     logging.debug(__import__("pprint").pformat(spec))
     logging.debug("-" * 80)
 
-    convert(infile=infile, spec=spec, outdir=outdir, limit=args.limit)
+    convert(
+        infile=infile,
+        spec=spec,
+        outdir=outdir,
+        limit=args.limit,
+        processes=args.processes,
+    )
 
 
 if __name__ == "__main__":
