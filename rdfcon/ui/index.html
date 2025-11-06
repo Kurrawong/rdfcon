@@ -56,7 +56,7 @@
       summary:hover {
         cursor: pointer;
       }
-      #clearInfile {
+      #clearInfile, #clearTemplateFunctions {
         cursor: pointer;
         font-size: small;
         text-decoration: underline;
@@ -263,6 +263,7 @@
             <label class="label" for="templateFunctions"
               >Template Functions:</label
             >
+            <span id="clearTemplateFunctions">clear</span>
             <div class="control">
               <input
                 class="input"
@@ -354,6 +355,11 @@
         .getElementById("clearInfile")
         .addEventListener("click", function () {
           document.getElementById("infile").value = "";
+        });
+      document
+        .getElementById("clearTemplateFunctions")
+        .addEventListener("click", function () {
+          document.getElementById("templateFunctions").value = "";
         });
 
       // auto suggest column names from csv headers
@@ -493,9 +499,9 @@
                 data[key] = filtered;
               }
             } else if (["infile", "templateFunctions"].includes(key)) {
-              data[key] = value.name;
+              data[key] = value.name || null;
             } else if (key === "identifier") {
-              data[key] = value.replaceAll('"', "");
+              data[key] = value.replaceAll('"', "") || null;
             } else if (key.startsWith("column")) {
               const columnIndexMatch = key.match(/column\[(\d+)\]/);
               if (columnIndexMatch) {
