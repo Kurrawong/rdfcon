@@ -19,38 +19,34 @@ pip install git+https://github.com/kurrawong/rdfcon.git@v1.2.0
 ## Usage
 
 rdfcon is a command line tool that takes tabular data from `CSV` files and converts them
-to `RDF` using a declaritive conversion specification.
+to `RDF` using a spec file.
 
 To perform a conversion just run
 
 ```bash
-rdfcon mydata-rdfcon.yaml
+rdfcon spec.yaml
 ```
 
-where `mydata-rdfcon.yaml` is an rdfcon conversion document.
+where `spec.yaml` defines how the conversion should be done.
 
-All of the configuration is done in the rdfcon conversion document.  
+All of the configuration is done in the spec file.  
 A minimal example of which could look like:
 
 ```yml
-# mydata-rdfcon.yaml
+# spec.yaml
 
 prefixes:
   - sdo: <https://schema.org/>
-infile: mydata.csv
-identifier: ID
-namespace: <https://example.org/pid/>
-types:
-  - sdo:CreativeWork
-columns:
-  - column: Title
-    predicate: sdo:headline
+infile: data.csv
+template: |
+    <https://example.org/pid/{ID}> a sdo:CreativeWork ;
+        sdo:headline "{Title}" .
 ```
 
 applied over the following data
 
 ```csv
-# mydata.csv
+# data.csv
 
 ID,Title
 1001,Gattaca
@@ -60,7 +56,7 @@ ID,Title
 to produce the following RDF
 
 ```turtle
-# mydata.ttl
+# data.ttl
 
 @prefix sdo: <https://schema.org/> .
 
@@ -104,8 +100,11 @@ rdfcon provides two ways to convert data to RDF.
 
    rdfcon can map columns to RDF using simple one-to-one predicate mappings.
    These mappings can be extended in a few ways that are not
-   possible with the template style mapping. This includes, splitting out multiple
-   values from a single cell and generating UUID style IRIs.
+   possible with the template style mapping like splitting out multiple
+   values from a single cell.
+
+   For simple cases, this is the preferred method and will be more performant, than the
+   template style mapping.
 
    ```yml
 
