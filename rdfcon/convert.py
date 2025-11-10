@@ -22,7 +22,6 @@ from rdfcon.utils import (
     compile_regex,
     count_rows,
     counter,
-    generate_prefix_frontmatter,
     get_uuid,
     replace_curly_terms,
 )
@@ -189,8 +188,7 @@ def templated_expressions(
     row = [cell.replace('"', r"\"") for cell in row]
     # escape new lines
     row = [cell.replace("\n", r"\n") for cell in row]
-    prefixes = generate_prefix_frontmatter()
-    template_str = prefixes + replace_curly_terms(spec["template"])
+    template_str = spec.get("prefixes", "") + replace_curly_terms(spec["template"])
     template = jinja2.Template(template_str)
     # add custom functions and python builtins to the template context
     custom_functions = load_custom_functions(spec.get("templateFunctions"))

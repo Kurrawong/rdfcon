@@ -33,14 +33,6 @@ def timer(func):
 
 
 @functools.lru_cache(maxsize=128)
-def generate_prefix_frontmatter() -> str:
-    prefixes = ""
-    for ns, uri in NSM.namespaces():
-        prefixes += f"@prefix {ns}: <{uri}> .\n"
-    return prefixes
-
-
-@functools.lru_cache(maxsize=128)
 def get_uuid(value: str) -> str:
     new_uuid = str(uuid.uuid3(uuid.NAMESPACE_DNS, value))
     return new_uuid
@@ -73,6 +65,10 @@ def parse_config_from_yaml(spec: Path) -> dict:
         for prefix in parsed_spec["prefixes"]:
             for ns, uri in prefix.items():
                 NSM.bind(ns, uri.strip("<>"))
+        prefixes = ""
+        for ns, uri in NSM.namespaces():
+            prefixes += f"@prefix {ns}: <{uri}> .\n"
+        parsed_spec["prefixes"] = prefixes
 
     def resolve_uris(item):
         if isinstance(item, dict):
