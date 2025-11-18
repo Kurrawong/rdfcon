@@ -20,6 +20,19 @@ md_schema = {
     },
     "infile": {"type": "string", "required": True},
     "outdir": {"type": "string", "required": False},
+    "maxGraphSizeMb": {
+        "type": "integer",
+        "required": False,
+        "default": None,
+        "nullable": True,
+        "min": 1,
+    },
+    "sizeCheckFrequency": {
+        "type": "integer",
+        "required": False,
+        "default": 30000,
+        "min": 1,
+    },
     "graph": {"type": "string", "required": False},
     "namespace": {
         "type": "string",
