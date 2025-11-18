@@ -291,6 +291,22 @@ which will give the following RDF
 ...
 ```
 
+#### Large files
+
+Large input files can lead to high memory consumption, slow serialization, and
+an enormous output file size. You can tell RDFCon to chunk the generated outputs
+into smaller pieces. By serialing the graph into approximately sized parts.
+
+To split the outputs into files of approximately `x` Mebibytes:
+
+```yml
+...
+maxGraphSizeMb: 80
+...
+```
+
+Which will split the outputs into files of about 80 Mb.
+
 ## Further reading
 
 A good way to explore the available options in rdfcon is to use the browser based UI.

@@ -20,6 +20,17 @@ outdir: ./
 # If given the output format will be .trig otherwise .ttl
 graph: ex:graph
 
+# An optional limit for the maximum output file size.
+# if the input is very large, then this will split the output
+# into chunks of approximately the given size (in Mebibytes).
+maxGraphSizeMb: 80
+
+# Configure the frequency at which to check the size of the graph.
+# (every x rows)
+# A higher number will improve performance at the risk
+# of overrunning the specified {maxGraphSizeMb}.
+sizeCheckFrequency: 30000
+
 # Name of column with the unique identifiers for each row.
 # Required if columns: are given
 identifier: id

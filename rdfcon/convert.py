@@ -19,6 +19,7 @@ from tqdm import tqdm
 from rdfcon.custom_functions import load_custom_functions
 from rdfcon.namespace import NSM
 from rdfcon.utils import (
+    approx_size_of,
     compile_regex,
     count_rows,
     counter,
@@ -175,7 +176,6 @@ def row_to_graph(headers: list[str], spec: dict, iri: URIRef, row: list) -> Grap
 def templated_expressions(
     headers: list[str],
     row: list,
-    iri: URIRef,
     spec: dict,
     idcol: int,
 ) -> Graph:
@@ -233,14 +233,13 @@ def process_row(
     spec: dict,
 ) -> Graph:
     g = Graph()
-    iri = get_iri_for_row(row, idcol, ns)
     if spec["columns"]:
+        iri = get_iri_for_row(row, idcol, ns)
         g += row_to_graph(headers=headers, spec=spec, iri=iri, row=row)
     if spec["template"]:
         g += templated_expressions(
             headers=headers,
             spec=spec,
-            iri=iri,
             row=row,
             idcol=idcol,
         )
@@ -248,8 +247,8 @@ def process_row(
 
 
 def convert(infile: Path, spec: dict, outdir: Path, limit: int, processes: int) -> None:
-    d = Dataset()
     graph_name = spec.get("graph")
+    d = Dataset()
     g = d.graph(graph_name)
     g.namespace_manager = NSM
     if graph_name:
@@ -262,8 +261,11 @@ def convert(infile: Path, spec: dict, outdir: Path, limit: int, processes: int) 
     total = count_rows(infile=infile) - 1
     if limit <= 0:
         limit = total
-    row_counter = counter(start=1, stop=limit, step=1)
-    with open(infile, "r") as file:
+    row_counter = counter()
+    chunk_counter = counter()
+    total_triples = 0
+    total_size = 0
+    with open(infile, "r", encoding="utf-8-sig") as file:
         reader = csv.reader(file)
         headers = next(reader)
         warn_about_unused_columns(headers=headers, spec=spec, filename=infile.name)
@@ -276,13 +278,53 @@ def convert(infile: Path, spec: dict, outdir: Path, limit: int, processes: int) 
             spec=spec,
         )
         with Pool(processes=processes) as pool:
-            results = tqdm(pool.imap_unordered(worker, reader), total=limit, initial=1)
+            results = tqdm(
+                pool.imap_unordered(worker, reader, chunksize=1),
+                total=limit,
+                initial=1,
+            )
             for result in results:
                 g += result
-                if next(row_counter) >= limit:
+                i = next(row_counter)
+                if i >= limit:
+                    chunk = next(chunk_counter)
+                    size = approx_size_of(g)
+                    total_size += size
+                    num_triples = len(g)
+                    total_triples += num_triples
+                    logging.info(
+                        f"Serializing chunk {chunk}, ~ {size}Mb, {num_triples:,} {'quads' if graph_name else 'triples'}"
+                    )
+                    g.serialize(
+                        destination=outfile.with_stem(f"{outfile.stem}-{chunk}"),
+                        format=format,
+                    )
                     break
-    g.serialize(destination=outfile, format=format)
+                if spec["maxGraphSizeMb"]:
+                    if i % spec["sizeCheckFrequency"] == 0:
+                        num_triples = len(g)
+                        total_triples += num_triples
+                        size = approx_size_of(g)
+                        total_size += size
+                        logging.info(
+                            f"Current graph size ~ {size}Mb, {num_triples:,} {'quads' if graph_name else 'triples'}"
+                        )
+                        if size > spec["maxGraphSizeMb"]:
+                            chunk = next(chunk_counter)
+                            logging.info(
+                                f"Serializing chunk {chunk}, ~ {size}Mb, {num_triples:,} {'quads' if graph_name else 'triples'}"
+                            )
+                            g.serialize(
+                                destination=outfile.with_stem(
+                                    f"{outfile.stem}-{chunk}"
+                                ),
+                                format=format,
+                            )
+                            del d
+                            d = Dataset()
+                            g = d.graph(graph_name)
+                            g.namespace_manager = NSM
     logging.info(
-        f"{len(g)} {'quads' if graph_name else 'triples'} written to {outfile}"
+        f"~ {total_size}Mb, {total_triples:,} {'quads' if graph_name else 'triples'} written to {outdir}"
     )
     return

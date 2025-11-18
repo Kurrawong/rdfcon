@@ -6,6 +6,8 @@ general utility functions to be used in other modules
 import csv
 import functools
 import logging
+import math
+import pickle
 import re
 import time
 import uuid
@@ -34,7 +36,7 @@ def timer(func):
 
 @functools.lru_cache(maxsize=128)
 def get_uuid(value: str) -> str:
-    new_uuid = str(uuid.uuid3(uuid.NAMESPACE_DNS, value))
+    new_uuid = str(uuid.uuid5(uuid.NAMESPACE_DNS, value))
     return new_uuid
 
 
@@ -128,9 +130,26 @@ def replace_curly_terms(text) -> str:
     return re.sub(pattern, repl, text)
 
 
-def counter(start: int, stop: int, step: int = 1) -> Iterator[int]:
+def counter(start: int = 1, step: int = 1) -> Iterator[int]:
     i = start
-    while i <= stop:
+    while True:
         yield i
         i += step
     return StopIteration
+
+
+def approx_size_of(x: object) -> float:
+    """Return the approximate size of an object in mebibytes
+
+    Measures the length in bytes of the pickled object divided by 3*
+    then converted to mebibytes.
+
+    It is only approximate and can vary significantly depending on the
+    structure of the object.
+
+    *3 is arbritary but based on experience. mileage may vary.
+    """
+    p = pickle.dumps(x)
+    bites = len(p)
+    mebibytes = math.floor(bites / 3 / 1024 / 1024)
+    return mebibytes

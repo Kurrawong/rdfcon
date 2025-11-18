@@ -56,7 +56,8 @@
       summary:hover {
         cursor: pointer;
       }
-      #clearInfile, #clearTemplateFunctions {
+      #clearInfile,
+      #clearTemplateFunctions {
         cursor: pointer;
         font-size: small;
         text-decoration: underline;
@@ -92,10 +93,10 @@
               to generate the document.
             </p>
             <p>
-              Once you have the YAML file downloaded you can provide it to the
-              rdfcon program on the command line like so:
+              Once you have the YAML downloaded you can provide it to rdfcon on
+              the command line like so:
             </p>
-            <p><code>$ rdfcon myfile-rdfcon.yaml</code></p>
+            <p><code>$ rdfcon spec.yaml</code></p>
           </details>
         </div>
         <form id="schemaForm" autocomplete="off">
@@ -111,6 +112,7 @@
                 rows="5"
                 placeholder="@prefix ex: <https://example.org/> ."
               >
+@prefix ex:  <https://example.org/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .</textarea
               >
             </div>
@@ -142,8 +144,9 @@
             <p class="hint">
               Due to browser security restrictions only the file name can be
               acquired. Because of this, you may need to manually update the
-              'infile' property with the full path after downloading. The infile
-              path can be an absolute path or a path relative to the spec file.
+              'infile' property with the full path after downloading the YAML.
+              The infile path can be an absolute path or a path relative to the
+              spec file.
             </p>
           </div>
 
@@ -183,6 +186,50 @@
             <p class="hint">
               IRIs can be given with or without surrounding angle brackets, i.e.
               <code>&lt;https://example.org/predicate&gt;</code>
+            </p>
+          </div>
+
+          <div class="field">
+            <label class="label" for="maxGraphSizeMb"
+              >Maximum Graph Size (Mb)</label
+            >
+            <div class="control">
+              <input
+                class="input"
+                type="number"
+                id="maxGraphSizeMb"
+                name="maxGraphSizeMb"
+                placeholder="80"
+              />
+            </div>
+            <p class="help">
+              An optional limit for the maximum output file size. if the input
+              is very large, then this will split the output into chunks of
+              approximately the given size (in Mebibytes).
+            </p>
+            <p class="hint">Leave blank for no limit (default)</p>
+          </div>
+
+          <div class="field">
+            <label class="label" for="sizeCheckFrequency"
+              >Size Check Frequency</label
+            >
+            <div class="control">
+              <input
+                class="input"
+                type="number"
+                id="sizeCheckFrequency"
+                name="sizeCheckFrequency"
+                placeholder="30000"
+              />
+            </div>
+            <p class="help">
+              Configure the frequency at which to check the size of the graph.
+              <em>(every x rows)</em>.
+            </p>
+            <p class="hint">
+              A higher number will improve performance at the risk of
+              overrunning the specified {maxGraphSizeMb}.
             </p>
           </div>
 
@@ -299,29 +346,20 @@
               <p>The template <strong>may</strong></p>
               <ul>
                 <li>
-                  contain placeholders like <code>{id}</code> or
+                  Contain placeholders like <code>{id}</code> or
                   <code>{author}</code>, where each placeholder is the name of a
                   column in the source data.
                 </li>
-                <li>use prefixes declared in the prefixes section</li>
-                <li>use standard Jinja2 templating syntax</li>
-              </ul>
-              <p>Notes</p>
-              <ul>
+                <li>Use the prefixes declared in the prefixes section</li>
                 <li>
-                  If the placeholder is the <code>{identifier}</code> column, it
-                  will be substituted with the namespaced IRI for that column
-                  instead of just the string.
+                  Reference functions defined in the {templateFunctions} file
                 </li>
                 <li>
-                  Other columns may be made as IRIs manually in the template. by
-                  doing something like
-                  <p>
-                    <code
-                      >{iri} schema:author
-                      &lt;https://example.org/agent/{author}&gt; .</code
-                    >
-                  </p>
+                  Use standard
+                  <a href="https://jinja.palletsprojects.com/en/stable/"
+                    >Jinja2</a
+                  >
+                  templating syntax
                 </li>
               </ul>
             </details>
@@ -500,6 +538,8 @@
               }
             } else if (["infile", "templateFunctions"].includes(key)) {
               data[key] = value.name || null;
+            } else if (["maxGraphSizeMb", "sizeCheckFrequency"].includes(key)) {
+              data[key] = parseInt(value) || null;
             } else if (key === "identifier") {
               data[key] = value.replaceAll('"', "") || null;
             } else if (key.startsWith("column")) {
@@ -560,7 +600,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `${cleanData["infile"].substring(0, cleanData["infile"].length - 4)}-rdfcon.yaml`;
+            a.download = `${cleanData["infile"].substring(0, cleanData["infile"].length - 4)}.yaml`;
             a.click();
             URL.revokeObjectURL(url);
           });

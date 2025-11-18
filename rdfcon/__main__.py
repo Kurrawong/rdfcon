@@ -66,7 +66,12 @@ def main():
         help="Open a browser based ui for creating spec files",
     )
     parser.add_argument(
-        "-v", "--verbose", help="more verbose logging", action="store_true"
+        "-v",
+        "--verbose",
+        help="increase output verbosity (use -v, -vv, -vvv, etc.)",
+        action="count",
+        dest="verbosity",
+        default=0,
     )
     parser.add_argument(
         "--version",
@@ -75,8 +80,8 @@ def main():
         help="Show the version and exit.",
     )
     args = parser.parse_args()
-    if args.verbose:
-        logging_config["handlers"]["console"]["level"] = "DEBUG"
+    loglevel = max(logging.DEBUG, (logging.ERROR - (10 * args.verbosity)))
+    logging_config["handlers"]["console"]["level"] = loglevel
     logging.config.dictConfig(logging_config)
     if not any([args.spec, args.ui]):
         parser.error("spec is required unless --ui is given")
