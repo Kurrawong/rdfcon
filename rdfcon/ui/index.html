@@ -151,6 +151,32 @@
           </div>
 
           <div class="field">
+            <label class="label" for="encoding">Input File Encoding:</label>
+            <div class="control">
+              <input
+                class="input"
+                type="text"
+                id="encoding"
+                name="encoding"
+                placeholder="utf-8"
+              />
+            </div>
+            <p class="help">
+              The encoding format of the {infile} defaults to the systems
+              preferred encoding format.
+            </p>
+            <p class="hint">
+              common encodings are utf-8, utf-8-sig, iso-8859-1. See the list of
+              aliases for standard encodings in the python
+              <a
+                href="https://docs.python.org/3/library/codecs.html#standard-encodings"
+                target="_blank"
+                >codecs module</a
+              >.
+            </p>
+          </div>
+
+          <div class="field">
             <label class="label" for="outdir">Output Directory:</label>
             <div class="control">
               <input
@@ -356,7 +382,9 @@
                 </li>
                 <li>
                   Use standard
-                  <a href="https://jinja.palletsprojects.com/en/stable/"
+                  <a
+                    href="https://jinja.palletsprojects.com/en/stable/"
+                    target="_blank"
                     >Jinja2</a
                   >
                   templating syntax

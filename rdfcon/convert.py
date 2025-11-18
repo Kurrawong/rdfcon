@@ -265,7 +265,7 @@ def convert(infile: Path, spec: dict, outdir: Path, limit: int, processes: int) 
     chunk_counter = counter()
     total_triples = 0
     total_size = 0
-    with open(infile, "r", encoding="utf-8-sig") as file:
+    with open(infile, "r", encoding=spec["encoding"]) as file:
         reader = csv.reader(file)
         headers = next(reader)
         warn_about_unused_columns(headers=headers, spec=spec, filename=infile.name)
