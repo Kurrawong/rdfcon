@@ -12,6 +12,12 @@ prefixes:
 # or a path relative to this file.
 infile: data.csv
 
+# The encoding format of the {infile}
+# defaults to the systems preferred encoding format.
+# common encodings are utf-8, utf-8-sig, iso-8859-1
+# see: https://docs.python.org/3/library/codecs.html#standard-encodings
+encoding: "utf-8"
+
 # An optional directory for the output, defaults to the same
 # directory as {infile}
 outdir: ./

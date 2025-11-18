@@ -6,6 +6,8 @@ It is used to validate them before execution.
 See: https://docs.python-cerberus.org/schemas.html
 """
 
+import locale
+
 md_schema = {
     "prefixes": {
         "type": "list",
@@ -19,6 +21,11 @@ md_schema = {
         "required": False,
     },
     "infile": {"type": "string", "required": True},
+    "encoding": {
+        "type": "string",
+        "required": False,
+        "default": locale.getpreferredencoding(),
+    },
     "outdir": {"type": "string", "required": False},
     "maxGraphSizeMb": {
         "type": "integer",

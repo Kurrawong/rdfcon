@@ -307,6 +307,19 @@ maxGraphSizeMb: 80
 
 Which will split the outputs into files of about 80 Mb.
 
+
+#### Encoding Issues
+
+You can specify the encoding format to use with the encoding parameter.
+
+```yml
+...
+encoding: utf-8-sig
+...
+```
+
+RDFCon will use the system preferred encoding format as the default.
+
 ## Further reading
 
 A good way to explore the available options in rdfcon is to use the browser based UI.
