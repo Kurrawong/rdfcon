@@ -120,10 +120,10 @@ def parse_config_from_yaml(spec: Path) -> dict:
 
 @functools.lru_cache(maxsize=128)
 def replace_curly_terms(text) -> str:
-    # Find and replace {something} with {{row[headers.index('something')]}} except for Jinja tags
+    # Find and replace {something} with {{ r['something'] }} except for Jinja tags
     def repl(match):
         inner = match.group(1)
-        return f"{{{{row[headers.index('{inner}')]}}}}"
+        return f"{{{{ r['{inner}'] }}}}"
 
     # Match single curly braces that are NOT for Jinja-like {% ... %} tags
     pattern = r"(?<!\{)\{(?!%)([^{}]+?)(?<!%)\}(?!\})"
