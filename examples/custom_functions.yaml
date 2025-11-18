@@ -11,14 +11,14 @@ templateFunctions: functions.py
 
 # The template string is a jinja2 template, where all the utilities of
 # a jinja2 template can be used.
-# This means that 
 #
-# Two variables are available in the template by default
+# three variables are available in the template by default
+# r: the current row as a dictionary (with the column headers as keys)
 # row: the current row as a list
-# headers: the column headers as a list
+# headers: the header row as a list
 #
-# There is the special case of column headings which will be converted
-# from {id} --> {{ row[headers.index("id")] }} automatically
+# There is a special case outside the jinja syntax, where
+# {id} will be converted to  {{ r["id"] }} automatically for convenience.
 #
 # any functions defined in the given {templateFunctions} file will also be made
 # available in the template
@@ -26,7 +26,7 @@ template: |-
   {% if int(row[0]) != 2 %}
     <https://example.org/pid/{{ uuid() }}> a sdo:CreativeWork ;
     sdo:identifier "{id}"^^xsd:token ;
-    sdo:genre "{{ get_genre(row[headers.index("category")]) }}" ;
+    sdo:genre "{{ get_genre(r["category"]) }}" ;
     sdo:comment "converted on {{ get_current_date() }} with commit {{ get_short_commit_hash() }}" ;
     .
   {% endif %}

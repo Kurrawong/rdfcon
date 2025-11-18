@@ -23,9 +23,10 @@ def load_custom_functions(filename: str | None) -> dict[str:object]:
         module_name = os.path.splitext(os.path.basename(filename))[0]
         function_names = _list_functions_in_file(filename)
         module = _load_module_from_file(module_name, filename)
-        return {
+        custom_functions = {
             name: getattr(module, name)
             for name in function_names
             if hasattr(module, name)
         }
+        return custom_functions
     return {}

@@ -1,0 +1,18 @@
+@prefix sdo: <https://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://example.org/pid/002ec5d6-294f-45d2-ad52-a2cf3c215f33> a sdo:CreativeWork ;
+    sdo:comment "converted on 2025-11-19 with commit 65099b6" ;
+    sdo:genre "Culture" ;
+    sdo:identifier "4"^^xsd:token .
+
+<https://example.org/pid/b3fc6f5e-2e15-4a41-9333-285760a9743b> a sdo:CreativeWork ;
+    sdo:comment "converted on 2025-11-19 with commit 65099b6" ;
+    sdo:genre "Business" ;
+    sdo:identifier "3"^^xsd:token .
+
+<https://example.org/pid/f924058d-39dd-4d79-876f-af9476784cbe> a sdo:CreativeWork ;
+    sdo:comment "converted on 2025-11-19 with commit 65099b6" ;
+    sdo:genre "Arts" ;
+    sdo:identifier "1"^^xsd:token .
+

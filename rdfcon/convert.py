@@ -181,26 +181,34 @@ def templated_expressions(
 ) -> Graph:
 
     g = Graph()
-    if not spec["template"]:
-        return g
 
     # escape double quotes in strings
     row = [cell.replace('"', r"\"") for cell in row]
     # escape new lines
     row = [cell.replace("\n", r"\n") for cell in row]
+    r = {col: row[headers.index(col)] for col in headers}
     template_str = spec.get("prefixes", "") + replace_curly_terms(spec["template"])
     template = jinja2.Template(template_str)
     # add custom functions and python builtins to the template context
     custom_functions = load_custom_functions(spec.get("templateFunctions"))
     template.globals.update(custom_functions)
     template.globals.update(__builtins__)
-    logging.debug(template_str)
     try:
-        rendered = template.render(row=row, headers=headers)
+        rendered = template.render(r=r, row=row, headers=headers)
     except Exception as e:
         raise Exception(f"Could not render the template string\n{template_str}: {e}")
     # remove datatypes from empty string literals to avoid parser warnings
     rendered = re.sub(r'""\^\^[\w:]+', '""', rendered)
+    # replace empty IRIs with empty strings so they can be removed
+    rendered = re.sub(r"<>", '""', rendered)
+    # replace bare prefixes with a placeholder IRI so they can be removed
+    rendered = re.sub(
+        r"^(?!(?:@prefix|prefix))([^\n]*?)\b(\w+):(?=\s)",
+        lambda m: m.group(1) + "<http://null>",
+        rendered,
+        flags=re.MULTILINE,
+    )
+
     try:
         g += Graph().parse(data=rendered, format="turtle")
     except Exception as e:
@@ -215,6 +223,11 @@ def templated_expressions(
     for s, p, o in empty_literals:
         g.remove((s, p, o))
 
+    # remove null IRI placeholders
+    null_triples = (triple for triple in g if URIRef("http://null") in triple)
+    for triple in null_triples:
+        g.remove(triple)
+
     # recursively remove empty blank nodes from the graph
     empty_bnode_query = "select ?o where { ?s ?p ?o . filter(isblank(?o)) . filter not exists { ?o ?x ?y } }"
     empty_bnodes = g.query(empty_bnode_query)
@@ -222,6 +235,7 @@ def templated_expressions(
         for o in empty_bnodes:
             g.remove((None, None, o))
             empty_bnodes = g.query(empty_bnode_query)
+
     return g
 
 

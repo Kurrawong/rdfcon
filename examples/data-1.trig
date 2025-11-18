@@ -12,7 +12,7 @@ ex:graph {
         schema:comment "converted from csv using rdfcon"^^xsd:string ;
         schema:dateCreated "2008-10-01T09:00:00"^^xsd:dateTime ;
         schema:datePublished "2025-03-17"^^xsd:date ;
-        schema:genre genre:4bc092dd-f26d-3dc2-9f8b-659cd753c014 ;
+        schema:genre genre:e6008ebb-40a5-5f95-b28a-6f55dbde1875 ;
         schema:headline "Publication 1"^^xsd:string ;
         schema:keywords "science"^^xsd:string .
 
@@ -22,7 +22,7 @@ ex:graph {
         schema:comment "converted from csv using rdfcon"^^xsd:string ;
         schema:dateCreated "2020-09-30T10:00:00"^^xsd:dateTime ;
         schema:datePublished "2024-07-01"^^xsd:date ;
-        schema:genre genre:4bc092dd-f26d-3dc2-9f8b-659cd753c014 ;
+        schema:genre genre:e6008ebb-40a5-5f95-b28a-6f55dbde1875 ;
         schema:headline "Publication 2"^^xsd:string ;
         schema:keywords "business and \"stuff\""^^xsd:string,
             "tech"^^xsd:string .
@@ -33,7 +33,7 @@ ex:graph {
         schema:comment "converted from csv using rdfcon"^^xsd:string ;
         schema:dateCreated "2024-01-02T00:00:00"^^xsd:dateTime ;
         schema:datePublished "2024-07-03"^^xsd:date ;
-        schema:genre genre:a4969d28-ad62-3940-9f3c-2cdec34989dd ;
+        schema:genre genre:ab1e7ab6-c67d-54e6-992f-dfe6712b3257 ;
         schema:headline "Publication 3"^^xsd:string ;
         schema:keywords "economics and 'stuff'"^^xsd:string .
 
@@ -45,7 +45,7 @@ ex:graph {
         schema:comment "converted from csv using rdfcon"^^xsd:string ;
         schema:dateCreated "2004-07-12T13:00:00"^^xsd:dateTime ;
         schema:datePublished "2025-10-01"^^xsd:date ;
-        schema:genre genre:0f12ee10-f259-3df6-a44a-1ef4febe58fa ;
+        schema:genre genre:ae87b094-8f66-5171-b391-ed874523a682 ;
         schema:headline "Publication 4"^^xsd:string .
 
     agent:1 schema:name "jovi, bon"^^xsd:string .
@@ -56,13 +56,13 @@ ex:graph {
 
     agent:4 schema:name "cleary, n"^^xsd:string .
 
-    genre:0f12ee10-f259-3df6-a44a-1ef4febe58fa a schema:Text ;
-        schema:name "category c"^^xsd:string .
-
-    genre:a4969d28-ad62-3940-9f3c-2cdec34989dd a schema:Text ;
+    genre:ab1e7ab6-c67d-54e6-992f-dfe6712b3257 a schema:Text ;
         schema:name "category b"^^xsd:string .
 
-    genre:4bc092dd-f26d-3dc2-9f8b-659cd753c014 a schema:Text ;
+    genre:ae87b094-8f66-5171-b391-ed874523a682 a schema:Text ;
+        schema:name "category c"^^xsd:string .
+
+    genre:e6008ebb-40a5-5f95-b28a-6f55dbde1875 a schema:Text ;
         schema:name "category A"^^xsd:string,
             "category a"^^xsd:string .
 }
