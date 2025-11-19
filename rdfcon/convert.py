@@ -203,7 +203,7 @@ def templated_expressions(
     rendered = re.sub(r"<>", '""', rendered)
     # replace bare prefixes with a placeholder IRI so they can be removed
     rendered = re.sub(
-        r"^(?!(?:@prefix|prefix))([^\n]*?)\b(\w+):(?=\s)",
+        r"^(?!(?:@prefix|prefix))([^\n\"']*?)\b([\w-]+):(?=\s)",
         lambda m: m.group(1) + "<http://null>",
         rendered,
         flags=re.MULTILINE,
