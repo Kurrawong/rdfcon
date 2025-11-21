@@ -36,11 +36,11 @@ A minimal example of which could look like:
 # spec.yaml
 
 prefixes:
-  - sdo: <https://schema.org/>
+  sdo: <https://schema.org/>
 infile: data.csv
 template: |
-    <https://example.org/pid/{ID}> a sdo:CreativeWork ;
-        sdo:headline "{Title}" .
+  <https://example.org/pid/{ID}> a sdo:CreativeWork ;
+      sdo:headline "{Title}" .
 ```
 
 applied over the following data
@@ -71,30 +71,42 @@ to produce the following RDF
 
 > [!TIP]  
 > You can limit the number of rows to process with the `--limit` flag.
-> very handy during testing.
+> very handy during testing. run `rdfcon --help` to see all the command line flags that
+> are available.
 
 > [!WARNING]  
 > rdfcon currently only works with `CSV` files as input. This may be extended in a
 > future release to allow other tabular formats.
 
-### Conversion document creation
+### Configuring the conversion
 
-rdfcon conversion documents are just `YAML` files, so they can be created with any text
-editor in the usual way.
+All RDFCon configuration is done in a `YAML` spec file.
+There is a convenient user interface that is helpful for learning the schema of the documents.
 
-There is also a convenient user interface that is helpful for learning the schema of the documents.
-
-To open the ui just run
+To open the UI just run
 
 ```bash
 rdfcon --ui
 ```
 
-And use the provided form to create your conversion document.
+And use the provided form to create your spec.
+
+After you have the knack for it, you can just create the spec files in a text
+editor of your choice.
+
+The structure of the spec file is validated against a [schema](./rdfcon/schemas.py)
+before the program is run. Any issues will be raised immediately.
+
+> [!TIP]  
+> If you are having trouble with configuration, you can run `rdfcon spec.yaml -vvv` for
+> very very verbose logging, which will print out the configuration as RDFCon sees it
+> after it has been evaluated and processed.
+>
+> This is usually a good starting point for debugging any issues that come up.
 
 ## Advanced usage
 
-rdfcon provides two ways to convert data to RDF.
+RDFCon provides two ways to convert data to RDF.
 
 1. Simple column mappings
 
@@ -107,8 +119,7 @@ rdfcon provides two ways to convert data to RDF.
    template style mapping.
 
    ```yml
-
-   ...
+   ---
    identifier: id
    namespace: <https://example.org/pid/>
    types:
@@ -130,8 +141,7 @@ rdfcon provides two ways to convert data to RDF.
    and to incorporate multiple columns into a single statement.
 
    ```yml
-
-   ...
+   ---
    template: |-
      <https://example.org/pid/{id}> a sdo:Thing ;
          rdfs:label "{name}" ;
@@ -139,21 +149,21 @@ rdfcon provides two ways to convert data to RDF.
          sdo:identifier "{warehouseId}"^^xsd:token .
    ```
 
-The above two examples showcase an equivalent conversion using the two available
-methods.
+The above two examples will produce the same RDF.
 
 > [!NOTE]  
-> The two methods are not mutually exclusive.  
-> Both methods can and should be used in tandom. There are limitations to each method
+> These methods are not mutually exclusive!  
+> Both methods can and should be used in tandom.
 > but in combination rdfcon should be able to handle most conversion scenarios.
 
 ### Custom functions
 
-Often you just can't avoid the need for some custom logic During a conversion.
-For this reason RDFCon allows you to define your own custom functions for use in
-the template string. The custom functions must be written in Python, in a seperate python
-file, and can be passed to the template via the `templateFunctions` parameter
-in the conversion spec.
+Often you will need some custom logic During a conversion.
+
+RDFCon allows you to provide functions for use in the template string via the
+`templateFunctions` parameter.
+
+The custom functions must be written in Python, in a seperate file.
 
 For example:
 
@@ -175,17 +185,70 @@ def get_short_commit_hash() -> str:
 
 ```yaml
 # myConversionSpec.yaml
-
-...
+---
 templateFunctions: my_custom_functions.py
 template: |
-    <https://example.org/pid/{id}> a sdo:Thing ;
-      sdo:comment "converted on {{ get_current_date() }} with commit {{ get_short_commit_hash() }}" ;
-    .
+  <https://example.org/pid/{id}> a sdo:Thing ;
+    sdo:comment "converted on {{ get_current_date() }} with commit {{ get_short_commit_hash() }}" ;
+  .
 ```
 
 For a complete example see [custom_functions.yaml](./examples/custom_functions.yaml).
 
+### Importing other specs
+
+If you are writing lots of conversions you may want to re-use some parts of them.
+
+RDFCon allows this via the imports parameter.
+
+For example:
+
+```yaml
+# subspec.yaml
+prefixes:
+  ex: <https://example.org/>
+  qudt: <http://qudt.org/schema/qudt/>
+  unit: <http://qudt.org/vocab/unit/>
+  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+templateFunctions: my_custom_functions.py
+```
+
+```yaml
+# spec.yaml
+
+imports:
+  - subspec.yaml
+
+infile: mydata.csv
+
+template: |
+  ex:{id} a ex:Item ;
+      rdfs:label "{name}" ;
+      ex:width [
+          a qudt:QuantityValue ;
+          qudt:value "{distance}" ;
+          qudt:unit unit:M ;
+      ] ;
+      rdfs:comment "Converted on {{ get_current_date() }}" ;
+  .
+```
+
+The prefixes and functions from `subspec.yaml` will then be available in `spec.yaml`.
+
+The imports parameter is a list of paths to other spec files. You can have as many as
+you want and the imported spec files can also import other spec files in a recursive
+manner.
+
+The spec files are evaluated in the order they are given, with values from later imports
+overwriting the values from earlier ones. In this way you can override the values from
+the imported spec file.
+
+> [!NOTE]
+> For dictionary type parameters (like prefixes) the imported values will be overwritten
+> key by key, meaning that rather than overwriting the whole parameter you can update and
+> extend it. i.e. For the list of prefixes, you can add new ones for a specific
+> conversion or overwrite one that is already defined in the imported spec.
 
 ### Scenarios
 
@@ -194,8 +257,7 @@ For a complete example see [custom_functions.yaml](./examples/custom_functions.y
 You can tell rdfcon about the format of your dates using a python date string like so:
 
 ```yml
-
-...
+---
 columns:
   - column: someDate
     predicate: ex:date
@@ -230,8 +292,7 @@ id,author
 which can be handled in rdfcon like so
 
 ```yml
-
-...
+---
 columns:
   - column: author
     predicate: sdo:author
@@ -263,8 +324,7 @@ and assume that you want to declare each of the authors as an `sdo:Person`, usin
 orignal cell value as their `sdo:name`. rdfcon can handle this like so
 
 ```yml
-
-...
+---
 columns:
   - column: author
     predicate: sdo:author
@@ -300,22 +360,19 @@ into smaller pieces. By serialing the graph into approximately sized parts.
 To split the outputs into files of approximately `x` Mebibytes:
 
 ```yml
-...
+---
 maxGraphSizeMb: 80
-...
 ```
 
 Which will split the outputs into files of about 80 Mb.
-
 
 #### Encoding Issues
 
 You can specify the encoding format to use with the encoding parameter.
 
 ```yml
-...
+---
 encoding: utf-8-sig
-...
 ```
 
 RDFCon will use the system preferred encoding format as the default.
@@ -335,7 +392,7 @@ accompanying data file [examples/data.csv](./examples/data.csv) and RDF output
 
 **csv2rdf**
 
-[https://rdflib.readthedocs.io/en/stable/_modules/rdflib/tools/csv2rdf.html](https://rdflib.readthedocs.io/en/stable/_modules/rdflib/tools/csv2rdf.html)
+[https://rdflib.readthedocs.io/en/stable/\_modules/rdflib/tools/csv2rdf.html](https://rdflib.readthedocs.io/en/stable/_modules/rdflib/tools/csv2rdf.html)
 
 built in to the rdflib library.
 
