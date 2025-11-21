@@ -32,7 +32,12 @@ md_schema = {
         "required": False,
         "default": locale.getpreferredencoding(),
     },
-    "outdir": {"type": "string", "required": False},
+    "outdir": {
+        "type": "string",
+        "required": False,
+        "default": None,
+        "nullable": True,
+    },
     "maxGraphSizeMb": {
         "type": "integer",
         "required": False,

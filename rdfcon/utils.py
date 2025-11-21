@@ -55,14 +55,14 @@ def count_rows(infile: Path) -> int:
 def resolve_path(path_str: str, spec_path: Path, directory: bool = False) -> Path:
     path = Path(path_str)
     if not path.is_absolute():
-        path = spec_path.parent / path
+        path = (spec_path.parent / path).resolve()
     if not path.exists():
         raise FileNotFoundError(f"Could not find the file {path}")
     if not directory and path.is_dir():
         raise ValueError(f"{path} is a directory")
     elif directory and path.is_file():
         raise ValueError(f"{path} is a file")
-    return path
+    return path.resolve()
 
 
 def merge(base: dict, new: dict) -> dict:
@@ -110,11 +110,14 @@ def parse_config_from_yaml(spec: Path, imported: bool = False) -> dict:
         merged_spec["infile"] = resolve_path(
             path_str=merged_spec["infile"], spec_path=spec
         )
+    if merged_spec.get("outdir"):
         merged_spec["outdir"] = resolve_path(
             path_str=merged_spec.get("outdir", ""),
             spec_path=spec,
             directory=True,
         )
+    if not imported and not merged_spec.get("outdir"):
+        merged_spec["outdir"] = spec.parent
 
     if merged_spec.get("prefixes") and not imported:
         for ns, uri in merged_spec["prefixes"].items():
