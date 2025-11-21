@@ -9,7 +9,6 @@ import re
 from datetime import datetime
 from functools import partial
 from multiprocessing import Pool
-from pathlib import Path
 
 import jinja2
 from rdflib import Dataset, Graph, Literal, Namespace, URIRef
@@ -102,11 +101,11 @@ def get_col_values(
 
 def warn_about_unused_columns(headers: list[str], spec: dict, filename: str) -> None:
     mapped_columns = set()
-    if spec["identifier"]:
+    if spec.get("identifier"):
         mapped_columns.add(spec["identifier"])
-    if spec["columns"]:
+    if spec.get("columns"):
         [mapped_columns.add(str(column["column"])) for column in spec["columns"]]
-    if spec["template"]:
+    if spec.get("template"):
         for col in headers:
             if re.findall(rf"\{{.*{col}.*\}}", spec["template"]):
                 mapped_columns.add(col)
@@ -151,7 +150,7 @@ def row_to_graph(headers: list[str], spec: dict, iri: URIRef, row: list) -> Grap
             g.add((iri, RDF.type, type))
 
     # column conversions
-    for coldef in spec["columns"]:
+    for coldef in spec.get("columns", []):
         col = headers.index(str(coldef["column"]))
         col_values, graph = get_col_values(
             col=row[col],
@@ -247,10 +246,10 @@ def process_row(
     spec: dict,
 ) -> Graph:
     g = Graph()
-    if spec["columns"]:
+    if spec.get("columns"):
         iri = get_iri_for_row(row, idcol, ns)
         g += row_to_graph(headers=headers, spec=spec, iri=iri, row=row)
-    if spec["template"]:
+    if spec.get("template"):
         g += templated_expressions(
             headers=headers,
             spec=spec,
@@ -260,29 +259,31 @@ def process_row(
     return g
 
 
-def convert(infile: Path, spec: dict, outdir: Path, limit: int, processes: int) -> None:
+def convert(spec: dict, limit: int, processes: int) -> None:
     graph_name = spec.get("graph")
     d = Dataset()
     g = d.graph(graph_name)
     g.namespace_manager = NSM
     if graph_name:
-        outfile = (outdir / infile.with_suffix(".trig").name).resolve()
+        outfile = (spec["outdir"] / spec["infile"].with_suffix(".trig").name).resolve()
         format = "trig"
     else:
-        outfile = (outdir / infile.with_suffix(".ttl").name).resolve()
+        outfile = (spec["outdir"] / spec["infile"].with_suffix(".ttl").name).resolve()
         format = "turtle"
-    ns = Namespace(spec["namespace"]) if spec["namespace"] else None
-    total = count_rows(infile=infile) - 1
+    ns = Namespace(spec["namespace"]) if spec.get("namespace") else None
+    total = count_rows(infile=spec["infile"]) - 1
     if limit <= 0:
         limit = total
     row_counter = counter()
     chunk_counter = counter()
     total_triples = 0
     total_size = 0
-    with open(infile, "r", encoding=spec["encoding"]) as file:
+    with open(spec["infile"], "r", encoding=spec["encoding"]) as file:
         reader = csv.reader(file)
         headers = next(reader)
-        warn_about_unused_columns(headers=headers, spec=spec, filename=infile.name)
+        warn_about_unused_columns(
+            headers=headers, spec=spec, filename=spec["infile"].name
+        )
         idcol = get_id_column(headers, spec)
         worker = partial(
             process_row,
@@ -314,7 +315,7 @@ def convert(infile: Path, spec: dict, outdir: Path, limit: int, processes: int) 
                         format=format,
                     )
                     break
-                if spec["maxGraphSizeMb"]:
+                if spec.get("maxGraphSizeMb"):
                     if i % spec["sizeCheckFrequency"] == 0:
                         num_triples = len(g)
                         total_triples += num_triples
@@ -339,6 +340,6 @@ def convert(infile: Path, spec: dict, outdir: Path, limit: int, processes: int) 
                             g = d.graph(graph_name)
                             g.namespace_manager = NSM
     logging.info(
-        f"~ {total_size}Mb, {total_triples:,} {'quads' if graph_name else 'triples'} written to {outdir}"
+        f"~ {total_size}Mb, {total_triples:,} {'quads' if graph_name else 'triples'} written to {spec['outdir']}"
     )
     return

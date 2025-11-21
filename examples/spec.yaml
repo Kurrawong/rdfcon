@@ -1,11 +1,11 @@
 # Optionally specify RDF prefixes used in this document
 prefixes:
-  - ex: <https://example.org/>
-  - pid: <https://example.org/pid/>
-  - agent: <https://example.org/agent/>
-  - genre: <https://example.org/genre/>
-  - schema: <https://schema.org/>
-  - xsd: <http://www.w3.org/2001/XMLSchema#>
+  ex: <https://example.org/>
+  pid: <https://example.org/pid/>
+  agent: <https://example.org/agent/>
+  genre: <https://example.org/genre/>
+  schema: <https://schema.org/>
+  xsd: <http://www.w3.org/2001/XMLSchema#>
 
 # [ required ]
 # the CSV file to process interpreted as an absolute path

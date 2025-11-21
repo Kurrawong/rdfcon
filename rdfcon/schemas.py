@@ -9,13 +9,19 @@ See: https://docs.python-cerberus.org/schemas.html
 import locale
 
 md_schema = {
-    "prefixes": {
+    "imports": {
         "type": "list",
         "schema": {
-            "type": "dict",
-            "keysrules": {"type": "string"},
-            "valuesrules": {"type": "string", "regex": "^<http[s]?://.*>"},
+            "type": "string",
         },
+        "nullable": True,
+        "required": False,
+        "default": None,
+    },
+    "prefixes": {
+        "type": "dict",
+        "keysrules": {"type": "string"},
+        "valuesrules": {"type": "string", "regex": "^<http[s]?://.*>"},
         "nullable": True,
         "default": None,
         "required": False,

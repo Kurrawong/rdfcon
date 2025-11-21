@@ -1,6 +1,6 @@
 prefixes:
-  - sdo: <https://schema.org/>
-  - xsd: <http://www.w3.org/2001/XMLSchema#>
+  sdo: <https://schema.org/>
+  xsd: <http://www.w3.org/2001/XMLSchema#>
 
 infile: data.csv
 

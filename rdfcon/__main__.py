@@ -11,6 +11,7 @@ import multiprocessing
 import webbrowser
 from importlib.metadata import version
 from pathlib import Path
+from pprint import pformat
 
 from rdfcon.config.logs import logging_config
 from rdfcon.convert import convert
@@ -22,23 +23,6 @@ def get_spec(path: Path) -> dict:
         raise FileNotFoundError(f"Spec file could not be found at {path}")
     spec = parse_config_from_yaml(path)
     return spec
-
-
-def resolve_paths(default_dir: Path, spec: dict) -> tuple[Path]:
-    if Path(spec["infile"]).is_absolute():
-        infile = Path(spec["infile"])
-    else:
-        infile = Path((default_dir / spec["infile"]).resolve())
-    if not infile.exists():
-        raise FileNotFoundError(f"Data file {infile} could not be found")
-    if not spec.get("outdir"):
-        outdir = infile.parent
-    elif Path(spec["outdir"]).is_absolute():
-        outdir = Path(spec["outdir"])
-    else:
-        outdir = (default_dir / spec["outdir"]).resolve()
-
-    return infile, outdir
 
 
 def main():
@@ -97,17 +81,14 @@ def main():
         exit()
     spec_path = Path(args.spec)
     spec = get_spec(path=spec_path)
-    infile, outdir = resolve_paths(default_dir=spec_path.parent, spec=spec)
 
     logging.debug("Parsed conversion doc")
     logging.debug("-" * 80)
-    logging.debug(__import__("pprint").pformat(spec))
+    logging.debug(pformat(spec))
     logging.debug("-" * 80)
 
     convert(
-        infile=infile,
         spec=spec,
-        outdir=outdir,
         limit=args.limit,
         processes=args.processes,
     )
