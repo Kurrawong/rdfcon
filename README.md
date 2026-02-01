@@ -106,7 +106,7 @@ before the program is run. Any issues will be raised immediately.
 >
 > or for a specific version of RDFCon
 >
-> `# yaml-language-server: $schema=https://raw.githubusercontent.com/kurrawong/rdfcon/refs/tags/v1.10.3/schema.json`
+> `# yaml-language-server: $schema=https://raw.githubusercontent.com/kurrawong/rdfcon/refs/tags/v1.11.0/schema.json`
 
 > [!TIP]  
 > If you are having trouble with configuration, you can run `rdfcon spec.yaml -vvv` for
