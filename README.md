@@ -97,6 +97,17 @@ editor of your choice.
 The structure of the spec file is validated against a [schema](./rdfcon/schemas.py)
 before the program is run. Any issues will be raised immediately.
 
+> [!TIP]
+> If your editor supports the [yaml-language-server](https://github.com/redhat-developer/yaml-language-server)
+> Then you can enable inline autocompletion and validation by adding the following line to the top of
+> your spec file.
+>
+> `# yaml-language-server: $schema=https://raw.githubusercontent.com/kurrawong/rdfcon/schema.json`
+>
+> or for a specific version of RDFCon
+>
+> `# yaml-language-server: $schema=https://raw.githubusercontent.com/kurrawong/rdfcon/refs/tags/v1.11.0/schema.json`
+
 > [!TIP]  
 > If you are having trouble with configuration, you can run `rdfcon spec.yaml -vvv` for
 > very very verbose logging, which will print out the configuration as RDFCon sees it
@@ -392,12 +403,18 @@ accompanying data file [examples/data.csv](./examples/data.csv) and RDF output
 
 **csv2rdf**
 
-[https://rdflib.readthedocs.io/en/stable/\_modules/rdflib/tools/csv2rdf.html](https://rdflib.readthedocs.io/en/stable/_modules/rdflib/tools/csv2rdf.html)
+<https://rdflib.readthedocs.io/en/stable/\_modules/rdflib/tools/csv2rdf.html>
 
 built in to the rdflib library.
 
 **tarql**
 
-[https://tarql.github.io/](https://tarql.github.io/)
+<https://tarql.github.io/>
 
 a sparql like conversion tool.
+
+**sparql-anything**
+
+<https://github.com/SPARQL-Anything/sparql.anything>
+
+like tarql but more.

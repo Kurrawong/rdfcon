@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "YAML Conversion Template Schema",
+  "type": "object",
+  "properties": {
+    "imports": {
+      "type": ["array", "null"],
+      "items": { "type": "string" },
+      "default": null
+    },
+    "prefixes": {
+      "type": ["object", "null"],
+      "propertyNames": { "type": "string" },
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^<http[s]?://.*>"
+      },
+      "default": null
+    },
+    "infile": { "type": "string" },
+    "encoding": {
+      "type": "string",
+      "default": "UTF-8"
+    },
+    "outdir": {
+      "type": ["string", "null"],
+      "default": null
+    },
+    "maxGraphSizeMb": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "default": null
+    },
+    "sizeCheckFrequency": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 30000
+    },
+    "graph": { "type": "string" },
+    "namespace": {
+      "type": ["string", "null"],
+      "default": null
+    },
+    "identifier": {
+      "type": ["string", "null"],
+      "default": null
+    },
+    "types": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "columns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "column": { "type": "string" },
+          "predicate": { "type": "string" },
+          "datatype": {
+            "type": "string",
+            "default": "<http://www.w3.org/2001/XMLSchema#string>"
+          },
+          "datestr": {
+            "type": ["string", "null"],
+            "default": null,
+            "pattern": "^(%[aAbBcdHIjmMpSUwWxXyYzZfGuvV]|[%\\-\\s:./,]+)+$"
+          },
+          "separator": { "type": ["string", "null"], "default": null },
+          "regex": { "type": ["boolean", "null"], "default": false },
+          "as_iri": { "type": "boolean", "default": false },
+          "namespace": { "type": ["string", "null"], "default": null },
+          "as_uuid": { "type": "boolean", "default": false },
+          "ignore_case": { "type": "boolean", "default": false },
+          "label": { "type": ["string", "null"], "default": null },
+          "type": { "type": ["string", "null"], "default": null }
+        },
+        "required": ["column", "predicate"]
+      },
+      "default": []
+    },
+    "templateFunctions": {
+      "type": ["string", "null"],
+      "pattern": ".*\\.py$",
+      "default": null
+    },
+    "template": {
+      "type": ["string", "null"],
+      "default": null
+    }
+  },
+  "required": ["infile"]
+}
