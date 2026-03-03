@@ -47,8 +47,8 @@ def compile_regex(pattern: str) -> re.Pattern:
 
 
 @timer
-def count_rows(infile: Path) -> int:
-    with open(infile, "r") as f:
+def count_rows(infile: Path, encoding: str) -> int:
+    with open(infile, "r", encoding=encoding) as f:
         return sum(1 for _ in csv.reader(f))
 
 

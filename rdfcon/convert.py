@@ -271,7 +271,7 @@ def convert(spec: dict, limit: int, processes: int) -> None:
         outfile = (spec["outdir"] / spec["infile"].with_suffix(".ttl").name).resolve()
         format = "turtle"
     ns = Namespace(spec["namespace"]) if spec.get("namespace") else None
-    total = count_rows(infile=spec["infile"]) - 1
+    total = count_rows(infile=spec["infile"], encoding=spec["encoding"]) - 1
     if limit <= 0 or total < limit:
         limit = total
     row_counter = counter()
