@@ -102,7 +102,7 @@ before the program is run. Any issues will be raised immediately.
 > Then you can enable inline autocompletion and validation by adding the following line to the top of
 > your spec file.
 >
-> `# yaml-language-server: $schema=https://raw.githubusercontent.com/kurrawong/rdfcon/schema.json`
+> `# yaml-language-server: $schema=https://raw.githubusercontent.com/kurrawong/rdfcon/refs/heads/main/schema.json`
 >
 > or for a specific version of RDFCon
 >
